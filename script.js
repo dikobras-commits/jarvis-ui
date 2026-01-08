@@ -102,32 +102,35 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    // 1. Сразу пишем в чат на экране (визуальный отклик)
+    // Берем username из Telegram или ставим дефолт
+    const username = tg.initDataUnsafe?.user?.username || "Admin_User";
+
+    // 1. Отображаем сообщение пользователя мгновенно
     const chatContainer = document.getElementById('chat-messages');
     chatContainer.innerHTML += `<div class="chat-bubble user">${text}</div>`;
-    input.value = "";
+    input.value = ""; // Очищаем поле
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    // 2. Берем имя (если нет ника, будет 'User')
-    const sender = tg.initDataUnsafe?.user?.username || "User";
-
-    // 3. Отправляем на сервер
     try {
-        // ВАЖНО: используем POST и передаем параметры в URL или Body
-        const res = await fetch(`${pcAddress}/chat/send?username=${sender}&text=${encodeURIComponent(text)}`, {
+        // 2. Отправляем запрос
+        const response = await fetch(`${pcAddress}/chat/send?username=${username}&text=${encodeURIComponent(text)}`, {
             method: 'POST',
             headers: { "bypass-tunnel-reminder": "true" }
         });
-        
-        const data = await res.json();
-        
-        // 4. Добавляем ответ ИИ
+
+        if (!response.ok) throw new Error("Сервер вернул ошибку");
+
+        const data = await response.json();
+
+        // 3. Отображаем ответ ИИ
         chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
         chatContainer.scrollTop = chatContainer.scrollHeight;
-        
-    } catch (e) {
-        chatContainer.innerHTML += `<div class="chat-bubble bot">Сэр, связь с сервером потеряна.</div>`;
+
+    } catch (err) {
+        console.error("Ошибка чата:", err);
+        chatContainer.innerHTML += `<div class="chat-bubble bot" style="color: #f43f5e;">Сэр, возникла ошибка соединения.</div>`;
     }
 }
 setInterval(updateStats, 4000);
+
 
