@@ -3,6 +3,8 @@ tg.expand();
 
 
 const pcAddress = "https://real-poets-refuse.loca.lt"; 
+const user = tg.initDataUnsafe?.user;
+const username = user ? user.username : "Guest";
 
 let isUserInteracting = false;
 
@@ -78,6 +80,45 @@ async function updateStats() {
     } catch (e) {}
 }
 
+async function loadChatHistory() {
+    const res = await fetch(`${pcAddress}/chat/history?username=${username}`, {
+        headers: { "bypass-tunnel-reminder": "true" }
+    });
+    const messages = await res.json();
+    const chatContainer = document.getElementById('chat-messages');
+    chatContainer.innerHTML = ""; // Очистка
+    
+    messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = `chat-bubble ${msg.role}`;
+        div.innerText = msg.content;
+        chatContainer.appendChild(div);
+    });
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    // Сразу отображаем в интерфейсе для скорости
+    const chatContainer = document.getElementById('chat-messages');
+    chatContainer.innerHTML += `<div class="chat-bubble user">${text}</div>`;
+    input.value = "";
+
+    // Отправляем на сервер
+    const res = await fetch(`${pcAddress}/chat/send?username=${username}&text=${encodeURIComponent(text)}`, {
+        method: 'POST',
+        headers: { "bypass-tunnel-reminder": "true" }
+    });
+    const data = await res.json();
+
+    // Добавляем ответ ИИ
+    chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
 function sendMessage() {
     const input = document.getElementById('user-input');
     if (input.value.trim() !== "") {
@@ -89,3 +130,4 @@ function sendMessage() {
 }
 
 setInterval(updateStats, 4000);
+
