@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis Control Panel</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .status-badge {
+            background: #1e293b;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            font-size: 0.8rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+            transition: transform 0.2s;
+        }
+        .card:active { transform: scale(0.95); }
+        .card i { font-size: 24px; display: block; margin-bottom: 10px; }
+        .btn-power { color: #f43f5e; }
+        .btn-apps { color: #38bdf8; }
+        .btn-notes { color: #fbbf24; }
+        .btn-ai { color: #2dd4bf; }
+        h3 { margin: 10px 0 5px 0; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>JARVIS v2.0</h1>
+        <div class="status-badge">SYSTEM ONLINE</div>
+    </div>
+
+    <div class="grid">
+        <div class="card" onclick="sendCommand('power_off')">
+            <div class="btn-power">⭕</div>
+            <h3>Питание</h3>
+            <small>Выключить ПК</small>
+        </div>
+        <div class="card" onclick="sendCommand('launch_browser')">
+            <div class="btn-apps">🌐</div>
+            <h3>Браузер</h3>
+            <small>Запустить Chrome</small>
+        </div>
+        <div class="card" onclick="alert('Скоро будет: Календарь')">
+            <div class="btn-notes">📅</div>
+            <h3>Заметки</h3>
+            <small>Напоминания</small>
+        </div>
+        <div class="card" onclick="alert('Скоро будет: Чат с ИИ')">
+            <div class="btn-ai">🤖</div>
+            <h3>ИИ Ассистент</h3>
+            <small>Спросить Джарвиса</small>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
+
+        function sendCommand(cmd) {
+            // Отправляем команду на наш сервер
+            fetch(`/control?command=${cmd}`)
+                .then(response => response.json())
+                .then(data => {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    alert("Команда отправлена: " + cmd);
+                });
+        }
+    </script>
+</body>
+</html>
