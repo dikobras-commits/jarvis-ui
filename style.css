@@ -68,3 +68,55 @@ body {
     font-weight: 500;
     opacity: 0.9;
 }
+
+.system-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.system-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.system-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.system-value {
+    font-weight: 900;
+    font-size: 16px;
+}
+
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%; 
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cpu-bar { background: linear-gradient(90deg, #38bdf8, #00d2ff); box-shadow: 0 0 10px var(--neon-blue); }
+.ram-bar { background: linear-gradient(90deg, #a855f7, #9d50bb); box-shadow: 0 0 10px var(--neon-purple); }
+.vol-bar { background: linear-gradient(90deg, #2dd4bf, #3aebaf); box-shadow: 0 0 10px var(--neon-green); }
+
+.cpu-text { color: var(--neon-blue); }
+.ram-text { color: var(--neon-purple); }
+.vol-text { color: var(--neon-green); }
