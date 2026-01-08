@@ -144,9 +144,11 @@ body {
 
 /* Фикс для чата, чтобы сообщения не уходили под ввод */
 .chat-wrapper {
-    height: calc(100vh - 250px);
+    height: calc(100vh - 230px);
     overflow-y: auto;
-    padding-bottom: 20px;
+    padding-bottom: 120px;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
 }
