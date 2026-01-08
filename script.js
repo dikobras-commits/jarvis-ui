@@ -29,6 +29,7 @@ function showPage(pageId, element) {
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
     element.classList.add('active');
     tg.HapticFeedback.impactOccurred('light');
+    if (pageId === 'chat') loadHistory();
 }
 
 // 3. Скриншоты
@@ -80,21 +81,20 @@ async function updateStats() {
     } catch (e) {}
 }
 
-async function loadChatHistory() {
-    const res = await fetch(`${pcAddress}/chat/history?username=${username}`, {
-        headers: { "bypass-tunnel-reminder": "true" }
-    });
-    const messages = await res.json();
-    const chatContainer = document.getElementById('chat-messages');
-    chatContainer.innerHTML = ""; // Очистка
-    
-    messages.forEach(msg => {
-        const div = document.createElement('div');
-        div.className = `chat-bubble ${msg.role}`;
-        div.innerText = msg.content;
-        chatContainer.appendChild(div);
-    });
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+async function loadHistory() {
+    const chatBox = document.getElementById('chat-messages');
+    try {
+        const res = await fetch(`${pcAddress}/chat/history?username=${myUsername}`, {
+            headers: { "bypass-tunnel-reminder": "true" }
+        });
+        const history = await res.json();
+        chatBox.innerHTML = ""; // Очищаем
+        history.forEach(msg => {
+            const side = msg.role === 'user' ? 'user' : 'bot';
+            chatBox.innerHTML += `<div class="chat-bubble ${side}">${msg.content}</div>`;
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (e) { console.error("История не загружена"); }
 }
 
 async function sendMessage() {
@@ -102,32 +102,22 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    // Сразу отображаем в интерфейсе для скорости
-    const chatContainer = document.getElementById('chat-messages');
-    chatContainer.innerHTML += `<div class="chat-bubble user">${text}</div>`;
+    const chatBox = document.getElementById('chat-messages');
+    chatBox.innerHTML += `<div class="chat-bubble user">${text}</div>`;
     input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Отправляем на сервер
-    const res = await fetch(`${pcAddress}/chat/send?username=${username}&text=${encodeURIComponent(text)}`, {
-        method: 'POST',
-        headers: { "bypass-tunnel-reminder": "true" }
-    });
-    const data = await res.json();
-
-    // Добавляем ответ ИИ
-    chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function sendMessage() {
-    const input = document.getElementById('user-input');
-    if (input.value.trim() !== "") {
-        const chat = document.getElementById('chat-messages');
-        chat.innerHTML += `<div class="chat-bubble user">${input.value}</div>`;
-        input.value = "";
-        tg.HapticFeedback.impactOccurred('light');
+    try {
+        const res = await fetch(`${pcAddress}/chat/send?username=${myUsername}&text=${encodeURIComponent(text)}`, {
+            method: 'POST',
+            headers: { "bypass-tunnel-reminder": "true" }
+        });
+        const data = await res.json();
+        chatBox.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (e) {
+        chatBox.innerHTML += `<div class="chat-bubble bot">Ошибка связи с сервером.</div>`;
     }
 }
 
 setInterval(updateStats, 4000);
-
