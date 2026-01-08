@@ -109,18 +109,33 @@ async function sendMessage() {
     const username = tg.initDataUnsafe?.user?.username || "Guest";
 
     try {
+        // Добавляем заголовок bypass-tunnel-reminder, чтобы туннель не блокировал данные
         const res = await fetch(`${pcAddress}/chat/send?username=${username}&text=${encodeURIComponent(text)}`, {
             method: 'POST',
-            headers: { "bypass-tunnel-reminder": "true" }
+            headers: { 
+                "bypass-tunnel-reminder": "true",
+                "Content-Type": "application/json"
+            }
         });
+
+        if (!res.ok) throw new Error("Сервер не ответил");
+
         const data = await res.json();
-        chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
+        
+        // Проверяем, что в ответе действительно есть текст
+        if (data && data.response) {
+            chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
+        } else {
+            chatContainer.innerHTML += `<div class="chat-bubble bot">Сэр, я получил пустой ответ.</div>`;
+        }
     } catch (e) {
-        chatContainer.innerHTML += `<div class="chat-bubble bot">Ошибка: сервер не отвечает.</div>`;
+        console.error("Ошибка:", e);
+        chatContainer.innerHTML += `<div class="chat-bubble bot">Ошибка связи. Проверьте туннель.</div>`;
     }
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
 
 
 
