@@ -84,14 +84,19 @@
         tg.expand(); // Развернуть на весь экран
 
         function sendCommand(cmd) {
-            // Отправляем команду на наш сервер
-            fetch(`/control?command=${cmd}`)
-                .then(response => response.json())
-                .then(data => {
-                    tg.HapticFeedback.notificationOccurred('success');
-                    alert("Команда отправлена: " + cmd);
-                });
+    // Вставь сюда свою ссылку из Localtunnel, которая сейчас запущена
+    const pcAddress = "https://afraid-clouds-bake.loca.lt"; 
+    
+    fetch(`${pcAddress}/control?command=${cmd}`, {
+        headers: { 
+            "bypass-tunnel-reminder": "true" // Это позволит команде пройти через защиту
+        }
+    })
+    .then(response => alert("Джарвис выполнил команду: " + cmd))
+    .catch(err => alert("Ошибка связи с ПК. Проверь туннель!"));
+}
         }
     </script>
 </body>
+
 </html>
