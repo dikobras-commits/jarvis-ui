@@ -1,5 +1,5 @@
 const tg = window.Telegram.WebApp;
-const pcAddress = "https://eager-rooms-tie.loca.lt"; 
+const pcAddress = "https://real-poets-refuse.loca.lt"; 
 let isUserInteracting = false;
 function sendCommand(cmd, value = null) {
     let url = `${pcAddress}/control?command=${cmd}`;
@@ -128,5 +128,6 @@ if (volSlider) {
     volSlider.onmouseup = () => { isUserInteracting = false; };
     volSlider.ontouchend = () => { isUserInteracting = false; };
 }
+
 
 
