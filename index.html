@@ -16,7 +16,7 @@
             margin: 0;
             padding: 20px;
         }
-        .header { text-align: center; margin-bottom: 30px; }
+        .header { text-align: center; margin-bottom: 20px; }
         .status-badge {
             background: #1e293b;
             padding: 5px 15px;
@@ -34,7 +34,7 @@
         }
         .card {
             background: #1e293b;
-            padding: 20px;
+            padding: 15px;
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -42,72 +42,224 @@
             transition: transform 0.2s;
         }
         .card:active { transform: scale(0.95); }
-        .card i { font-size: 24px; display: block; margin-bottom: 10px; }
+        .full-width { grid-column: span 2; }
+        
+        /* Цвета кнопок */
         .btn-power { color: #f43f5e; }
         .btn-apps { color: #38bdf8; }
-        .btn-notes { color: #fbbf24; }
-        .btn-ai { color: #2dd4bf; }
-        h3 { margin: 10px 0 5px 0; font-size: 1rem; }
+        .btn-media { color: #a855f7; }
+        .btn-eyes { color: #2dd4bf; }
+        
+        .media-controls {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            font-size: 1.5rem;
+        }
+        .media-btn { cursor: pointer; padding: 5px 10px; }
+        
+        h3 { margin: 10px 0 5px 0; font-size: 0.9rem; }
+        small { font-size: 0.7rem; opacity: 0.7; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>JARVIS v2.0</h1>
+        <h1>JARVIS v2.1</h1>
         <div class="status-badge">SYSTEM ONLINE</div>
     </div>
 
     <div class="grid">
+        <div class="card full-width" onclick="takeScreenshot()">
+            <div class="btn-eyes">📸</div>
+            <h3>Система «Глаза»</h3>
+            <small>Сделать скриншот экрана</small>
+        </div>
+
         <div class="card" onclick="sendCommand('power_off')">
             <div class="btn-power">⭕</div>
             <h3>Питание</h3>
             <small>Выключить ПК</small>
         </div>
+
         <div class="card" onclick="sendCommand('launch_browser')">
             <div class="btn-apps">🌐</div>
             <h3>Браузер</h3>
-            <small>Запустить Chrome</small>
+            <small>Chrome</small>
         </div>
-        <div class="card" onclick="alert('Скоро будет: Календарь')">
-            <div class="btn-notes">📅</div>
-            <h3>Заметки</h3>
-            <small>Напоминания</small>
-        </div>
-        <div class="card" onclick="alert('Скоро будет: Чат с ИИ')">
-            <div class="btn-ai">🤖</div>
-            <h3>ИИ Ассистент</h3>
-            <small>Спросить Джарвиса</small>
+
+        <div class="card full-width">
+            <div class="btn-media">🎵</div>
+            <h3>Медиа-центр</h3>
+            <div class="media-controls">
+                <span class="media-btn" onclick="sendMedia('prev')">⏮</span>
+                <span class="media-btn" onclick="sendMedia('play_pause')">⏯</span>
+                <span class="media-btn" onclick="sendMedia('next')">⏭</span>
+            </div>
+            <div class="media-controls" style="margin-top: 5px;">
+                <span class="media-btn" onclick="sendMedia('vol_down')">🔉</span>
+                <span style="font-size: 0.8rem; align-self: center;">Громкость</span>
+                <span class="media-btn" onclick="sendMedia('vol_up')">🔊</span>
+            </div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
 
-    function sendCommand(cmd) {
-    const pcAddress = "https://plain-doodles-exist.loca.lt"; 
-    
-    fetch(`${pcAddress}/control?command=${cmd}`, {
-        method: 'GET',
-        headers: {
-            
-            "bypass-tunnel-reminder": "true",
-            "User-Agent": "Mozilla/5.0" 
-        },
-        mode: 'cors'
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Ошибка сети');
-        console.log("Команда выполнена успешно");
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Джарвис не видит твой ПК. Проверь туннель или введи IP в браузере телефона.");
-    });
-}
+        // ЗАМЕНИ НА СВОЮ АКТУАЛЬНУЮ ССЫЛКУ ИЗ ТЕРМИНАЛА (Localtunnel)
+        const pcAddress = "<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis Control Panel</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .header { text-align: center; margin-bottom: 20px; }
+        .status-badge {
+            background: #1e293b;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            font-size: 0.8rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+            transition: transform 0.2s;
+        }
+        .card:active { transform: scale(0.95); }
+        .full-width { grid-column: span 2; }
+        
+        /* Цвета кнопок */
+        .btn-power { color: #f43f5e; }
+        .btn-apps { color: #38bdf8; }
+        .btn-media { color: #a855f7; }
+        .btn-eyes { color: #2dd4bf; }
+        
+        .media-controls {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            font-size: 1.5rem;
+        }
+        .media-btn { cursor: pointer; padding: 5px 10px; }
+        
+        h3 { margin: 10px 0 5px 0; font-size: 0.9rem; }
+        small { font-size: 0.7rem; opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>JARVIS v2.1</h1>
+        <div class="status-badge">SYSTEM ONLINE</div>
+    </div>
+
+    <div class="grid">
+        <div class="card full-width" onclick="takeScreenshot()">
+            <div class="btn-eyes">📸</div>
+            <h3>Система «Глаза»</h3>
+            <small>Сделать скриншот экрана</small>
+        </div>
+
+        <div class="card" onclick="sendCommand('power_off')">
+            <div class="btn-power">⭕</div>
+            <h3>Питание</h3>
+            <small>Выключить ПК</small>
+        </div>
+
+        <div class="card" onclick="sendCommand('launch_browser')">
+            <div class="btn-apps">🌐</div>
+            <h3>Браузер</h3>
+            <small>Chrome</small>
+        </div>
+
+        <div class="card full-width">
+            <div class="btn-media">🎵</div>
+            <h3>Медиа-центр</h3>
+            <div class="media-controls">
+                <span class="media-btn" onclick="sendMedia('prev')">⏮</span>
+                <span class="media-btn" onclick="sendMedia('play_pause')">⏯</span>
+                <span class="media-btn" onclick="sendMedia('next')">⏭</span>
+            </div>
+            <div class="media-controls" style="margin-top: 5px;">
+                <span class="media-btn" onclick="sendMedia('vol_down')">🔉</span>
+                <span style="font-size: 0.8rem; align-self: center;">Громкость</span>
+                <span class="media-btn" onclick="sendMedia('vol_up')">🔊</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // ЗАМЕНИ НА СВОЮ АКТУАЛЬНУЮ ССЫЛКУ ИЗ ТЕРМИНАЛА (Localtunnel)
+        const pcAddress = "https://fuzzy-carrots-cheat.loca.lt"; 
+
+        function sendCommand(cmd) {
+            fetch(`${pcAddress}/control?command=${cmd}`, {
+                headers: { "bypass-tunnel-reminder": "true" }
+            }).then(() => tg.HapticFeedback.notificationOccurred('success'));
+        }
+
+        function sendMedia(action) {
+            fetch(`${pcAddress}/media?action=${action}`, {
+                headers: { "bypass-tunnel-reminder": "true" }
+            }).then(() => tg.HapticFeedback.impactOccurred('light'));
+        }
+
+        function takeScreenshot() {
+            // Открываем скриншот в новом окне браузера Telegram
+            window.open(`${pcAddress}/screenshot?bypass-tunnel-reminder=true`, '_blank');
+        }
     </script>
 </body>
+</html>"; 
 
+        function sendCommand(cmd) {
+            fetch(`${pcAddress}/control?command=${cmd}`, {
+                headers: { "bypass-tunnel-reminder": "true" }
+            }).then(() => tg.HapticFeedback.notificationOccurred('success'));
+        }
+
+        function sendMedia(action) {
+            fetch(`${pcAddress}/media?action=${action}`, {
+                headers: { "bypass-tunnel-reminder": "true" }
+            }).then(() => tg.HapticFeedback.impactOccurred('light'));
+        }
+
+        function takeScreenshot() {
+            // Открываем скриншот в новом окне браузера Telegram
+            window.open(`${pcAddress}/screenshot?bypass-tunnel-reminder=true`, '_blank');
+        }
+    </script>
+</body>
 </html>
+
 
 
 
