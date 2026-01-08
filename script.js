@@ -1,8 +1,15 @@
 const tg = window.Telegram.WebApp;
-tg.expand();
-
-// УКАЖИ СВОЙ АДРЕС ИЗ ТЕРМИНАЛА
 const pcAddress = "https://eager-rooms-tie.loca.lt"; 
+let isUserInteracting = false;
+function sendCommand(cmd, value = null) {
+    let url = `${pcAddress}/control?command=${cmd}`;
+    if (value !== null) url += `&value=${value}`;
+    fetch(url, { headers: { "bypass-tunnel-reminder": "true" } })
+    .then(() => {
+        if (cmd !== 'set_volume') tg.HapticFeedback.notificationOccurred('success');
+    })
+    .catch(e => console.error("Ошибка связи с ПК"));
+}
 
 function showPage(pageId, el) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -13,14 +20,6 @@ function showPage(pageId, el) {
     
     tg.HapticFeedback.impactOccurred('light');
 }
-
-function sendCommand(cmd) {
-    fetch(`${pcAddress}/control?command=${cmd}`, {
-        headers: { "bypass-tunnel-reminder": "true" }
-    }).then(() => tg.HapticFeedback.notificationOccurred('success'))
-      .catch(e => console.error("Link Error"));
-}
-
 async function takeScreenshot() {
     const img = document.getElementById('screen-img');
     const cont = document.getElementById('screenshot-container');
@@ -129,4 +128,5 @@ if (volSlider) {
     volSlider.onmouseup = () => { isUserInteracting = false; };
     volSlider.ontouchend = () => { isUserInteracting = false; };
 }
+
 
