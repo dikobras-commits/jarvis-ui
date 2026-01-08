@@ -58,13 +58,15 @@ async function updateStats() {
         document.getElementById('ram-val').innerText = data.ram + '%';
         document.getElementById('ram-bar').style.width = data.ram + '%';
 
-        // Обновляем положение ползунка, только если пользователь его не трогает
-        if (!isUserDragging) {
-            const volSlider = document.getElementById('volume-slider');
-            volSlider.value = data.volume; 
+        // Обновляем ползунок из системы, только если мы его НЕ трогаем
+        if (!isUserInteracting) {
+            const slider = document.getElementById('volume-slider');
+            slider.value = data.volume; 
             document.getElementById('vol-val').innerText = data.volume + '%';
         }
-    } catch (e) {}
+    } catch (e) {
+        console.log("Ошибка обновления статуса");
+    }
 }
 
 setInterval(updateStats, 3000);
@@ -106,21 +108,25 @@ document.getElementById('user-input')?.addEventListener('keypress', function (e)
 
 let isUserDragging = false; // Флаг: двигает ли пользователь ползунок прямо сейчас
 
+let isUserInteracting = false; // Флаг: трогает ли пользователь ползунок
+
 function updateVolume(val) {
     document.getElementById('vol-val').innerText = val + '%';
     
-    // Отправляем команду ТОЛЬКО если пользователь сам двигает ползунок
-    if (isUserDragging) {
+    // Отправляем на сервер ТОЛЬКО если это действие пользователя
+    if (isUserInteracting) {
         fetch(`${pcAddress}/control?command=set_volume&value=${val}`, {
             headers: { "bypass-tunnel-reminder": "true" }
         });
     }
 }
 
-// Слушатели событий для мыши/тача, чтобы понять, когда пользователь нажал на слайдер
-const slider = document.getElementById('volume-slider');
-slider.addEventListener('mousedown', () => { isUserDragging = true; });
-slider.addEventListener('touchstart', () => { isUserDragging = true; });
-slider.addEventListener('mouseup', () => { isUserDragging = false; });
-slider.addEventListener('touchend', () => { isUserDragging = false; });
+// Привязываем события к ползунку, чтобы понимать, когда его трогают
+const volSlider = document.getElementById('volume-slider');
+if (volSlider) {
+    volSlider.onmousedown = () => { isUserInteracting = true; };
+    volSlider.ontouchstart = () => { isUserInteracting = true; };
+    volSlider.onmouseup = () => { isUserInteracting = false; };
+    volSlider.ontouchend = () => { isUserInteracting = false; };
+}
 
