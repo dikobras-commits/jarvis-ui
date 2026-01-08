@@ -76,7 +76,6 @@ body {
 .ram { background: var(--purple); box-shadow: 0 0 10px var(--purple); }
 
 /* Chat Bubbles */
-.chat-wrapper { display: flex; flex-direction: column; gap: 10px; }
 .chat-bubble { padding: 12px 18px; border-radius: 18px; max-width: 80%; font-size: 14px; }
 .bot { background: rgba(168, 85, 247, 0.15); border: 1px solid var(--purple); align-self: flex-start; }
 .user { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--blue); align-self: flex-end; }
@@ -152,3 +151,4 @@ body {
     gap: 10px;
     scroll-behavior: smooth;
 }
+
