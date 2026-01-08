@@ -102,22 +102,32 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    const chatBox = document.getElementById('chat-messages');
-    chatBox.innerHTML += `<div class="chat-bubble user">${text}</div>`;
+    // 1. Сразу пишем в чат на экране (визуальный отклик)
+    const chatContainer = document.getElementById('chat-messages');
+    chatContainer.innerHTML += `<div class="chat-bubble user">${text}</div>`;
     input.value = "";
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
+    // 2. Берем имя (если нет ника, будет 'User')
+    const sender = tg.initDataUnsafe?.user?.username || "User";
+
+    // 3. Отправляем на сервер
     try {
-        const res = await fetch(`${pcAddress}/chat/send?username=${myUsername}&text=${encodeURIComponent(text)}`, {
+        // ВАЖНО: используем POST и передаем параметры в URL или Body
+        const res = await fetch(`${pcAddress}/chat/send?username=${sender}&text=${encodeURIComponent(text)}`, {
             method: 'POST',
             headers: { "bypass-tunnel-reminder": "true" }
         });
+        
         const data = await res.json();
-        chatBox.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // 4. Добавляем ответ ИИ
+        chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
     } catch (e) {
-        chatBox.innerHTML += `<div class="chat-bubble bot">Ошибка связи с сервером.</div>`;
+        chatContainer.innerHTML += `<div class="chat-bubble bot">Сэр, связь с сервером потеряна.</div>`;
     }
 }
-
 setInterval(updateStats, 4000);
+
