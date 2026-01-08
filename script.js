@@ -82,19 +82,18 @@ async function updateStats() {
 }
 
 async function loadHistory() {
-    const chatBox = document.getElementById('chat-messages');
+    const username = tg.initDataUnsafe?.user?.username || "Guest";
     try {
-        const res = await fetch(`${pcAddress}/chat/history?username=${myUsername}`, {
+        const res = await fetch(`${pcAddress}/chat/history?username=${username}`, {
             headers: { "bypass-tunnel-reminder": "true" }
         });
-        const history = await res.json();
-        chatBox.innerHTML = ""; // Очищаем
-        history.forEach(msg => {
-            const side = msg.role === 'user' ? 'user' : 'bot';
-            chatBox.innerHTML += `<div class="chat-bubble ${side}">${msg.content}</div>`;
-        });
-        chatBox.scrollTop = chatBox.scrollHeight;
-    } catch (e) { console.error("История не загружена"); }
+        const messages = await res.json();
+        const chatContainer = document.getElementById('chat-messages');
+        chatContainer.innerHTML = messages.map(msg => 
+            `<div class="chat-bubble ${msg.role === 'user' ? 'user' : 'bot'}">${msg.content}</div>`
+        ).join('');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    } catch (e) { console.log("История не загружена"); }
 }
 
 async function sendMessage() {
@@ -102,35 +101,26 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    // Берем username из Telegram или ставим дефолт
-    const username = tg.initDataUnsafe?.user?.username || "Admin_User";
-
-    // 1. Отображаем сообщение пользователя мгновенно
     const chatContainer = document.getElementById('chat-messages');
     chatContainer.innerHTML += `<div class="chat-bubble user">${text}</div>`;
-    input.value = ""; // Очищаем поле
+    input.value = "";
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
+    const username = tg.initDataUnsafe?.user?.username || "Guest";
+
     try {
-        // 2. Отправляем запрос
-        const response = await fetch(`${pcAddress}/chat/send?username=${username}&text=${encodeURIComponent(text)}`, {
+        const res = await fetch(`${pcAddress}/chat/send?username=${username}&text=${encodeURIComponent(text)}`, {
             method: 'POST',
             headers: { "bypass-tunnel-reminder": "true" }
         });
-
-        if (!response.ok) throw new Error("Сервер вернул ошибку");
-
-        const data = await response.json();
-
-        // 3. Отображаем ответ ИИ
+        const data = await res.json();
         chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-
-    } catch (err) {
-        console.error("Ошибка чата:", err);
-        chatContainer.innerHTML += `<div class="chat-bubble bot" style="color: #f43f5e;">Сэр, возникла ошибка соединения.</div>`;
+    } catch (e) {
+        chatContainer.innerHTML += `<div class="chat-bubble bot">Ошибка: сервер не отвечает.</div>`;
     }
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
 
 
