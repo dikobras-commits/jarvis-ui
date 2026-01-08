@@ -43,13 +43,10 @@
         }
         .card:active { transform: scale(0.95); }
         .full-width { grid-column: span 2; }
-        
-        /* Цвета кнопок */
         .btn-power { color: #f43f5e; }
         .btn-apps { color: #38bdf8; }
         .btn-media { color: #a855f7; }
         .btn-eyes { color: #2dd4bf; }
-        
         .media-controls {
             display: flex;
             justify-content: space-around;
@@ -57,9 +54,31 @@
             font-size: 1.5rem;
         }
         .media-btn { cursor: pointer; padding: 5px 10px; }
-        
         h3 { margin: 10px 0 5px 0; font-size: 0.9rem; }
         small { font-size: 0.7rem; opacity: 0.7; }
+        
+        #screenshot-container {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        #screen-img {
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid #38bdf8;
+        }
+        .close-btn {
+            width: 100%;
+            margin-top: 10px;
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -103,44 +122,54 @@
         </div>
     </div>
 
+    <div id="screenshot-container">
+        <img id="screen-img" src="">
+        <button class="close-btn" onclick="document.getElementById('screenshot-container').style.display='none'">Закрыть</button>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ЗАМЕНИ НА СВОЮ АКТУАЛЬНУЮ ССЫЛКУ ИЗ ТЕРМИНАЛА (Localtunnel)
+        // АКТУАЛЬНАЯ ССЫЛКА
         const pcAddress = "https://purple-tigers-beg.loca.lt"; 
 
         function sendCommand(cmd) {
             fetch(`${pcAddress}/control?command=${cmd}`, {
                 headers: { "bypass-tunnel-reminder": "true" }
-            }).then(() => tg.HapticFeedback.notificationOccurred('success'));
+            }).then(() => tg.HapticFeedback.notificationOccurred('success'))
+              .catch(e => alert("Ошибка: " + e));
         }
 
         function sendMedia(action) {
             fetch(`${pcAddress}/media?action=${action}`, {
                 headers: { "bypass-tunnel-reminder": "true" }
-            }).then(() => tg.HapticFeedback.impactOccurred('light'));
+            }).then(() => tg.HapticFeedback.impactOccurred('light'))
+              .catch(e => alert("Ошибка: " + e));
         }
 
-        <div id="screenshot-container" style="display:none; margin-top: 20px; width: 100%;">
-    <img id="screen-img" src="" style="width: 100%; border-radius: 10px; border: 2px solid #38bdf8;">
-    <button onclick="document.getElementById('screenshot-container').style.display='none'" style="width: 100%; margin-top: 10px; background: #334155; color: white; border: none; padding: 10px; border-radius: 10px;">Закрыть</button>
-</div>
-
-<script>
-function takeScreenshot() {
-    const imgElement = document.getElementById('screen-img');
-    const container = document.getElementById('screenshot-container');
-    
-    // Генерируем URL с уникальным хвостом, чтобы картинка не кэшировалась
-    const timestamp = new Date().getTime();
-    const url = `${pcAddress}/screenshot?bypass-tunnel-reminder=true&t=${timestamp}`;
-    
-    imgElement.src = url;
-    container.style.display = 'block';
-    
-    tg.HapticFeedback.notificationOccurred('success');
-}
-</script>
+        function takeScreenshot() {
+            const imgElement = document.getElementById('screen-img');
+            const container = document.getElementById('screenshot-container');
+            const timestamp = new Date().getTime();
+            
+            // Показываем контейнер и ставим заглушку, пока грузится
+            container.style.display = 'block';
+            imgElement.src = "https://i.gifer.com/ZKZg.gif"; // Анимация загрузки
+            
+            const url = `${pcAddress}/screenshot?bypass-tunnel-reminder=true&t=${timestamp}`;
+            
+            // Подменяем заглушку на реальный скриншот
+            const newImg = new Image();
+            newImg.src = url;
+            newImg.onload = function() {
+                imgElement.src = url;
+                tg.HapticFeedback.notificationOccurred('success');
+            };
+            newImg.onerror = function() {
+                alert("Не удалось загрузить скриншот. Проверь сервер!");
+            };
+        }
+    </script>
 </body>
 </html>
