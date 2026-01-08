@@ -55,9 +55,15 @@ async function updateStats() {
         
         document.getElementById('cpu-val').innerText = data.cpu + '%';
         document.getElementById('cpu-bar').style.width = data.cpu + '%';
-        
         document.getElementById('ram-val').innerText = data.ram + '%';
         document.getElementById('ram-bar').style.width = data.ram + '%';
+
+        // Обновляем положение ползунка, только если пользователь его не трогает
+        if (!isUserDragging) {
+            const volSlider = document.getElementById('volume-slider');
+            volSlider.value = data.volume; 
+            document.getElementById('vol-val').innerText = data.volume + '%';
+        }
     } catch (e) {}
 }
 
@@ -98,15 +104,23 @@ document.getElementById('user-input')?.addEventListener('keypress', function (e)
     }
 });
 
+let isUserDragging = false; // Флаг: двигает ли пользователь ползунок прямо сейчас
+
 function updateVolume(val) {
     document.getElementById('vol-val').innerText = val + '%';
     
-    // Отправляем на ПК
-    fetch(`${pcAddress}/control?command=set_volume&value=${val}`, {
-        headers: { "bypass-tunnel-reminder": "true" }
-    });
-    
-    // Легкая вибрация при движении ползунка
-    if(val % 5 === 0) tg.HapticFeedback.impactOccurred('light');
-
+    // Отправляем команду ТОЛЬКО если пользователь сам двигает ползунок
+    if (isUserDragging) {
+        fetch(`${pcAddress}/control?command=set_volume&value=${val}`, {
+            headers: { "bypass-tunnel-reminder": "true" }
+        });
+    }
 }
+
+// Слушатели событий для мыши/тача, чтобы понять, когда пользователь нажал на слайдер
+const slider = document.getElementById('volume-slider');
+slider.addEventListener('mousedown', () => { isUserDragging = true; });
+slider.addEventListener('touchstart', () => { isUserDragging = true; });
+slider.addEventListener('mouseup', () => { isUserDragging = false; });
+slider.addEventListener('touchend', () => { isUserDragging = false; });
+
