@@ -148,28 +148,35 @@
               .catch(e => alert("Ошибка: " + e));
         }
 
-        function takeScreenshot() {
-            const imgElement = document.getElementById('screen-img');
-            const container = document.getElementById('screenshot-container');
-            const timestamp = new Date().getTime();
-            
-            // Показываем контейнер и ставим заглушку, пока грузится
-            container.style.display = 'block';
-            imgElement.src = "https://i.gifer.com/ZKZg.gif"; // Анимация загрузки
-            
-            const url = `${pcAddress}/screenshot?bypass-tunnel-reminder=true&t=${timestamp}`;
-            
-            // Подменяем заглушку на реальный скриншот
-            const newImg = new Image();
-            newImg.src = url;
-            newImg.onload = function() {
-                imgElement.src = url;
-                tg.HapticFeedback.notificationOccurred('success');
-            };
-            newImg.onerror = function() {
-                alert("Не удалось загрузить скриншот. Проверь сервер!");
-            };
-        }
+    async function takeScreenshot() {
+    const imgElement = document.getElementById('screen-img');
+    const container = document.getElementById('screenshot-container');
+    const timestamp = new Date().getTime();
+    
+    container.style.display = 'block';
+    imgElement.src = "https://i.gifer.com/ZKZg.gif"; // Анимация загрузки
+
+    try {
+        const response = await fetch(`${pcAddress}/screenshot?t=${timestamp}`, {
+            method: 'GET',
+            headers: {
+                'bypass-tunnel-reminder': 'true' // Обход страницы пароля
+            }
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const blob = await response.blob();
+        const objectURL = URL.createObjectURL(blob);
+        
+        imgElement.src = objectURL;
+        tg.HapticFeedback.notificationOccurred('success');
+    } catch (err) {
+        console.error("Критическая ошибка:", err);
+        alert("Джарвис не смог получить изображение: " + err.message);
+    }
+}
     </script>
 </body>
 </html>
+
