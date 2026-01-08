@@ -4,7 +4,6 @@ tg.expand();
 
 const pcAddress = "https://cyan-women-bow.loca.lt"; 
 const user = tg.initDataUnsafe?.user;
-const username = user ? user.username : "Guest";
 
 let isUserInteracting = false;
 
@@ -101,42 +100,38 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
+    // 1. Визуально добавляем сообщение пользователя
     const chatContainer = document.getElementById('chat-messages');
     chatContainer.innerHTML += `<div class="chat-bubble user">${text}</div>`;
     input.value = "";
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
+    // 2. Берем имя пользователя
     const username = tg.initDataUnsafe?.user?.username || "Guest";
 
     try {
-        // Добавляем заголовок bypass-tunnel-reminder, чтобы туннель не блокировал данные
+        // 3. Отправляем запрос с заголовком для обхода предупреждения localtunnel
         const res = await fetch(`${pcAddress}/chat/send?username=${username}&text=${encodeURIComponent(text)}`, {
             method: 'POST',
             headers: { 
-                "bypass-tunnel-reminder": "true",
-                "Content-Type": "application/json"
+                "bypass-tunnel-reminder": "true" // ОБЯЗАТЕЛЬНО для localtunnel
             }
         });
 
-        if (!res.ok) throw new Error("Сервер не ответил");
+        if (!res.ok) throw new Error("Сервер вернул ошибку");
 
         const data = await res.json();
         
-        // Проверяем, что в ответе действительно есть текст
+        // 4. Добавляем ответ бота, если он пришел
         if (data && data.response) {
             chatContainer.innerHTML += `<div class="chat-bubble bot">${data.response}</div>`;
         } else {
-            chatContainer.innerHTML += `<div class="chat-bubble bot">Сэр, я получил пустой ответ.</div>`;
+            chatContainer.innerHTML += `<div class="chat-bubble bot">Сэр, я получил пустой ответ от системы.</div>`;
         }
     } catch (e) {
-        console.error("Ошибка:", e);
-        chatContainer.innerHTML += `<div class="chat-bubble bot">Ошибка связи. Проверьте туннель.</div>`;
+        console.error("Ошибка чата:", e);
+        chatContainer.innerHTML += `<div class="chat-bubble bot" style="color: #ff4d4d;">Ошибка: ответ не дошел до интерфейса.</div>`;
     }
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
-
-
-
-
-
