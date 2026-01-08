@@ -84,19 +84,31 @@
         tg.expand(); // Развернуть на весь экран
 
     function sendCommand(cmd) {
-
     const pcAddress = "https://plain-doodles-exist.loca.lt"; 
     
     fetch(`${pcAddress}/control?command=${cmd}`, {
-        headers: { "bypass-tunnel-reminder": "true" } 
+        method: 'GET',
+        headers: {
+            
+            "bypass-tunnel-reminder": "true",
+            "User-Agent": "Mozilla/5.0" 
+        },
+        mode: 'cors'
     })
-    .then(response => console.log("Команда ушла!"))
-    .catch(err => alert("Ошибка: сервер на ПК не отвечает. Проверь туннель!"));
+    .then(response => {
+        if (!response.ok) throw new Error('Ошибка сети');
+        console.log("Команда выполнена успешно");
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Джарвис не видит твой ПК. Проверь туннель или введи IP в браузере телефона.");
+    });
 }
     </script>
 </body>
 
 </html>
+
 
 
 
