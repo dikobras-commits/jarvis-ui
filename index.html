@@ -55,8 +55,36 @@
     </div>
 
     <div id="system" class="page">
+    <div class="system-card">
+        <div class="system-info">
+            <div class="system-label"><span>💻</span> CPU Usage</div>
+            <div class="system-value cpu-text" id="cpu-val">0%</div>
         </div>
+        <div class="progress-container">
+            <div class="progress-bar cpu-bar" id="cpu-bar"></div>
+        </div>
+    </div>
 
+    <div class="system-card">
+        <div class="system-info">
+            <div class="system-label"><span>💾</span> RAM Usage</div>
+            <div class="system-value ram-text" id="ram-val">0%</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar ram-bar" id="ram-bar"></div>
+        </div>
+    </div>
+
+    <div class="system-card">
+        <div class="system-info">
+            <div class="system-label"><span>🔊</span> Volume</div>
+            <div class="system-value vol-text" id="vol-val">75%</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar vol-bar" style="width: 75%;"></div>
+        </div>
+    </div>
+</div>
     <nav class="tab-bar">
         <div class="tab-item active" onclick="showPage('dashboard', this)">
             <span class="tab-icon">🏠</span> Dashboard
