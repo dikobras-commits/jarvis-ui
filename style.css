@@ -109,14 +109,17 @@ body {
 /* Стили для панели ввода в чате */
 .chat-input-container {
     position: fixed;
-    bottom: 90px; /* Над таб-баром */
-    left: 20px;
-    right: 20px;
+    bottom: 95px; /* Чуть выше таб-бара */
+    left: 15px;
+    right: 15px;
+    height: 50px; /* Фиксируем высоту для точности расчетов */
     display: flex;
     gap: 10px;
-    padding: 10px;
+    padding: 8px 15px;
     border-radius: 15px;
-    z-index: 10;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.8) !important; /* Делаем чуть плотнее, чтобы текст сзади не мешал */
+    backdrop-filter: blur(20px);
 }
 
 .chat-input-container input {
@@ -141,19 +144,25 @@ body {
     box-shadow: 0 0 10px var(--blue);
 }
 
-/* Фикс для чата, чтобы сообщения не уходили под ввод */
 .chat-wrapper {
-    height: calc(100vh - 230px);
+    height: calc(100vh - 220px); 
     overflow-y: auto;
-    padding-bottom: 120px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    scroll-behavior: smooth;
+    gap: 12px;
+    padding: 10px 20px;
+    padding-bottom: 0;
 }
 
 .chat-bubble:last-child {
     margin-bottom: 20px;
+}
+
+.chat-wrapper::after {
+    content: "";
+    display: block;
+    min-height: 100px; /* Это создаст пустое место под последним сообщением */
+    width: 100%;
 }
 
 
