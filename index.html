@@ -44,16 +44,16 @@
             </div>
         </section>
 
-        <section id="chat" class="page">
-    <div class="chat-wrapper" id="chat-messages">
-        <div class="chat-bubble bot">Система активна. Жду ваших указаний, сэр.</div>
+        <div id="chat" class="page">
+    <div class="chat-container">
+        <div id="chat-messages" class="chat-wrapper">
+            </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Введите сообщение...">
+            <button onclick="sendMessage()">➔</button>
+        </div>
     </div>
-    
-    <div class="chat-input-container">
-        <input type="text" id="user-input" placeholder="Введите команду..." autocomplete="off">
-        <button onclick="sendMessage()">➔</button>
-    </div>
-</section>
+</div>
 
         <section id="system" class="page">
             <div class="sys-card">
@@ -93,3 +93,4 @@
 </body>
 
 </html>
+
