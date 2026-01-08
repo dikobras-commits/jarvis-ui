@@ -151,32 +151,34 @@
     async function takeScreenshot() {
     const imgElement = document.getElementById('screen-img');
     const container = document.getElementById('screenshot-container');
-    const timestamp = new Date().getTime();
     
     container.style.display = 'block';
     imgElement.src = "https://i.gifer.com/ZKZg.gif"; // Анимация загрузки
 
     try {
-        const response = await fetch(`${pcAddress}/screenshot?t=${timestamp}`, {
+        const response = await fetch(`${pcAddress}/screenshot`, {
             method: 'GET',
             headers: {
-                'bypass-tunnel-reminder': 'true' // Обход страницы пароля
+                'bypass-tunnel-reminder': 'true' // Обход страницы Localtunnel
             }
         });
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
 
-        const blob = await response.blob();
-        const objectURL = URL.createObjectURL(blob);
-        
-        imgElement.src = objectURL;
-        tg.HapticFeedback.notificationOccurred('success');
+        if (data.status === "success") {
+            // Вставляем Base64 код напрямую в атрибут src
+            imgElement.src = `data:image/png;base64,${data.image}`;
+            tg.HapticFeedback.notificationOccurred('success');
+        } else {
+            throw new Error(data.message);
+        }
     } catch (err) {
-        console.error("Критическая ошибка:", err);
-        alert("Джарвис не смог получить изображение: " + err.message);
+        alert("Ошибка Джарвиса: " + err.message);
+        container.style.display = 'none';
     }
 }
     </script>
 </body>
 </html>
+
 
