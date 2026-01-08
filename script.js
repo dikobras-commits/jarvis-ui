@@ -2,7 +2,7 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 // УКАЖИ СВОЙ АДРЕС ИЗ ТЕРМИНАЛА
-const pcAddress = "https://purple-tigers-beg.loca.lt"; 
+const pcAddress = "https://eager-rooms-tie.loca.lt"; 
 
 function showPage(pageId, el) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -108,4 +108,5 @@ function updateVolume(val) {
     
     // Легкая вибрация при движении ползунка
     if(val % 5 === 0) tg.HapticFeedback.impactOccurred('light');
+
 }
