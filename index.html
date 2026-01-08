@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JARVIS v3.0</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <h1 class="main-title">JARVIS</h1>
+        <div class="status-badge"><span>●</span> SERVER ONLINE</div>
+    </header>
+
+    <main class="content">
+        <section id="dashboard" class="page active">
+            <div class="grid-layout">
+                <div class="control-btn btn-blue" onclick="sendCommand('launch_browser')">
+                    <span class="btn-icon">🌐</span><span class="btn-text">Open Browser</span>
+                </div>
+                <div class="control-btn btn-red" onclick="sendCommand('open_youtube')">
+                    <span class="btn-icon">📺</span><span class="btn-text">Open YouTube</span>
+                </div>
+                <div class="control-btn btn-purple" onclick="sendCommand('launch_game')">
+                    <span class="btn-icon">🎮</span><span class="btn-text">Launch Game</span>
+                </div>
+                <div class="control-btn btn-orange" onclick="sendCommand('power_off')">
+                    <span class="btn-icon">⏻</span><span class="btn-text">PC Shutdown</span>
+                </div>
+                <div class="control-btn btn-green" onclick="alert('System Online')">
+                    <span class="btn-icon">⚡</span><span class="btn-text">PC Startup</span>
+                </div>
+                <div class="control-btn btn-blue" onclick="takeScreenshot()">
+                    <span class="btn-icon">📸</span><span class="btn-text">Screenshot</span>
+                </div>
+            </div>
+            
+            <div id="screenshot-container" class="glass-modal">
+                <img id="screen-img" src="" alt="Screenshot">
+                <button onclick="hideScreenshot()" class="close-btn">Close</button>
+            </div>
+        </section>
+
+        <section id="chat" class="page">
+    <div class="chat-wrapper" id="chat-messages">
+        <div class="chat-bubble bot">Система активна. Жду ваших указаний, сэр.</div>
+    </div>
+    
+    <div class="chat-input-container">
+        <input type="text" id="user-input" placeholder="Введите команду..." autocomplete="off">
+        <button onclick="sendMessage()">➔</button>
+    </div>
+</section>
+
+        <section id="system" class="page">
+            <div class="sys-card">
+                <div class="sys-info"><span>💻 CPU Usage</span><span id="cpu-val">0%</span></div>
+                <div class="bar-bg"><div id="cpu-bar" class="bar-fill cpu"></div></div>
+            </div>
+            <div class="sys-card">
+                <div class="sys-info"><span>💾 RAM Usage</span><span id="ram-val">0%</span></div>
+                <div class="bar-bg"><div id="ram-bar" class="bar-fill ram"></div></div>
+            </div>
+            <div class="sys-card card-green">
+    <div class="sys-info">
+        <div class="sys-label"><span class="icon-bg-green">🔊</span> Volume</div>
+        <span class="sys-value text-green" id="vol-val">75%</span>
+    </div>
+    <div class="slider-container">
+        <input type="range" min="0" max="100" value="75" class="slider" id="volume-slider" oninput="updateVolume(this.value)">
+        <div class="slider-glow"></div>
+    </div>
+</div>
+        </section>
+    </main>
+
+    <nav class="tab-bar">
+        <div class="tab-item active" onclick="showPage('dashboard', this)">
+            <span class="tab-icon">🏠</span><span>Dashboard</span>
+        </div>
+        <div class="tab-item" onclick="showPage('chat', this)">
+            <span class="tab-icon">💬</span><span>Chat</span>
+        </div>
+        <div class="tab-item" onclick="showPage('system', this)">
+            <span class="tab-icon">⚙️</span><span>System</span>
+        </div>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+</html>

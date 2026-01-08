@@ -1,0 +1,111 @@
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+// УКАЖИ СВОЙ АДРЕС ИЗ ТЕРМИНАЛА
+const pcAddress = "https://purple-tigers-beg.loca.lt"; 
+
+function showPage(pageId, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    
+    document.getElementById(pageId).classList.add('active');
+    el.classList.add('active');
+    
+    tg.HapticFeedback.impactOccurred('light');
+}
+
+function sendCommand(cmd) {
+    fetch(`${pcAddress}/control?command=${cmd}`, {
+        headers: { "bypass-tunnel-reminder": "true" }
+    }).then(() => tg.HapticFeedback.notificationOccurred('success'))
+      .catch(e => console.error("Link Error"));
+}
+
+async function takeScreenshot() {
+    const img = document.getElementById('screen-img');
+    const cont = document.getElementById('screenshot-container');
+    cont.style.display = 'block';
+    img.src = "https://i.gifer.com/ZKZg.gif"; 
+
+    try {
+        const res = await fetch(`${pcAddress}/screenshot`, {
+            headers: { 'bypass-tunnel-reminder': 'true' }
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+            img.src = `data:image/png;base64,${data.image}`;
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+    } catch (err) {
+        cont.style.display = 'none';
+    }
+}
+
+function hideScreenshot() {
+    document.getElementById('screenshot-container').style.display = 'none';
+}
+
+// Обновление CPU/RAM
+async function updateStats() {
+    try {
+        const res = await fetch(`${pcAddress}/status`, {
+            headers: { "bypass-tunnel-reminder": "true" }
+        });
+        const data = await res.json();
+        
+        document.getElementById('cpu-val').innerText = data.cpu + '%';
+        document.getElementById('cpu-bar').style.width = data.cpu + '%';
+        
+        document.getElementById('ram-val').innerText = data.ram + '%';
+        document.getElementById('ram-bar').style.width = data.ram + '%';
+    } catch (e) {}
+}
+
+setInterval(updateStats, 3000);
+
+function sendMessage() {
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+    
+    if (text !== "") {
+        const chatMessages = document.getElementById('chat-messages');
+        
+        // Добавляем сообщение пользователя
+        const userDiv = document.createElement('div');
+        userDiv.className = 'chat-bubble user';
+        userDiv.innerText = text;
+        chatMessages.appendChild(userDiv);
+        
+        // Очищаем ввод
+        input.value = "";
+        
+        // Прокрутка вниз
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Отправляем текст на ПК (FastAPI эндпоинт, который мы создадим позже)
+        fetch(`${pcAddress}/chat?text=${encodeURIComponent(text)}`, {
+            headers: { "bypass-tunnel-reminder": "true" }
+        });
+        
+        tg.HapticFeedback.impactOccurred('medium');
+    }
+}
+
+// Отправка по нажатию Enter
+document.getElementById('user-input')?.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+function updateVolume(val) {
+    document.getElementById('vol-val').innerText = val + '%';
+    
+    // Отправляем на ПК
+    fetch(`${pcAddress}/control?command=set_volume&value=${val}`, {
+        headers: { "bypass-tunnel-reminder": "true" }
+    });
+    
+    // Легкая вибрация при движении ползунка
+    if(val % 5 === 0) tg.HapticFeedback.impactOccurred('light');
+}
