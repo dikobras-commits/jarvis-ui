@@ -120,14 +120,21 @@ function updateVolume(val) {
     }
 }
 
-// Привязываем события к ползунку, чтобы понимать, когда его трогают
 const volSlider = document.getElementById('volume-slider');
 if (volSlider) {
-    volSlider.onmousedown = () => { isUserInteracting = true; };
-    volSlider.ontouchstart = () => { isUserInteracting = true; };
-    volSlider.onmouseup = () => { isUserInteracting = false; };
-    volSlider.ontouchend = () => { isUserInteracting = false; };
+    volSlider.oninput = function() {
+        isUserInteracting = true;
+        document.getElementById('vol-val').innerText = this.value + '%';
+        // Отправляем звук (sendCommand вызовется здесь)
+        sendCommand('set_volume', this.value);
+    };
+
+    // Сбрасываем флаг только после того, как пользователь отпустил палец
+    const stopInteracting = () => { setTimeout(() => { isUserInteracting = false; }, 1000); };
+    volSlider.onmouseup = stopInteracting;
+    volSlider.ontouchend = stopInteracting;
 }
+
 
 
 
