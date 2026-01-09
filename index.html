@@ -83,14 +83,20 @@
 </div>
         </section>
         <section id="files" class="page">
-    <div class="file-header">
-        <button onclick="goBackFiles()" id="file-back" style="display:none">⬅ Назад</button>
-        <h2 id="current-folder-name">Мои файлы</h2>
-    </div>
-    <div id="file-list" class="file-grid">
+    <div class="file-manager-container">
+        <button class="back-btn" onclick="goBackFiles()">⬅ Назад</button>
+        
+        <div id="file-list" class="file-scroll-area"></div>
+        
+        <div id="file-actions" class="file-footer-bar">
+            <div class="selection-info">
+                <span class="btn-icon">📄</span>
+                Выбрано: <span id="sel-count">0</span>
+            </div>
+            <button class="export-btn" onclick="exportSelected()">
+                <span class="btn-icon">🚀</span> ВЫГРУЗИТЬ
+            </button>
         </div>
-    <div id="file-actions" class="file-actions-bar" style="display:none">
-        <button class="btn-export" onclick="exportSelected()">Выгрузить в Telegram (<span id="sel-count">0</span>)</button>
     </div>
 </section>
     </main>
@@ -144,6 +150,7 @@
 </body>
 
 </html>
+
 
 
 
