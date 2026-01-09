@@ -194,7 +194,6 @@ let currentFilePath = "";
 let selectedFiles = new Set();
 
 async function loadFiles(path = "") {
-    // 1. Исправляем ID: берем 'file-list', как в твоем HTML
     const container = document.getElementById('file-list');
     if (!container) {
         console.error("Контейнер file-list не найден!");
@@ -214,7 +213,7 @@ async function loadFiles(path = "") {
         });
 
         const items = await response.json();
-        container.innerHTML = ""; // Очищаем текст загрузки
+        container.innerHTML = ""; 
 
         if (items.error) {
             container.innerHTML = `<p style="color:var(--red); padding:20px;">${items.error}</p>`;
@@ -223,13 +222,22 @@ async function loadFiles(path = "") {
 
         items.forEach(item => {
             const div = document.createElement('div');
-            // Добавляем класс file-item для стилей и тип
             div.className = `file-item ${item.type}`;
             
-            let icon = item.type === 'file' ? "📄" : "📁";
+            // --- НОВЫЙ БЛОК ЛОГИКИ ПРЕДПРОСМОТРА ---
+            let iconHtml = "";
+            if (item.preview) {
+                // Если есть превью от сервера, вставляем картинку
+                iconHtml = `<img src="data:image/jpeg;base64,${item.preview}" class="file-preview-img">`;
+            } else {
+                // Если превью нет, ставим обычную иконку
+                let icon = item.type === 'file' ? "📄" : "📁";
+                iconHtml = `<span class="file-icon">${icon}</span>`;
+            }
+            // ---------------------------------------
             
             div.innerHTML = `
-                <span class="file-icon">${icon}</span>
+                ${iconHtml}
                 <span class="file-name">${item.name}</span>
                 ${item.type === 'file' ? `
                     <input type="checkbox" 
@@ -239,14 +247,14 @@ async function loadFiles(path = "") {
                 ` : ''}
             `;
 
-            // Клик по всей строке
             div.onclick = () => {
                 if (item.type === 'file') {
                     const cb = div.querySelector('input');
-                    cb.checked = !cb.checked;
-                    toggleFile(item.path);
+                    if (cb) {
+                        cb.checked = !cb.checked;
+                        toggleFile(item.path);
+                    }
                 } else {
-                    // Если папка или категория — заходим внутрь
                     loadFiles(item.path);
                 }
             };
@@ -321,6 +329,7 @@ function goBackFiles() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
