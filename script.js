@@ -245,8 +245,9 @@ function toggleFile(path) {
 }
 
 async function exportSelected() {
-    // Получаем ID пользователя
+   
     const userId = tg.initDataUnsafe?.user?.id;
+    tg.showAlert("Ваш ID: " + userId + ". Отправляю " + selectedFiles.size + " файлов.");
     
     if (!userId) {
         alert("Сэр, я не вижу вашего Telegram ID. Запустите бота заново.");
@@ -295,6 +296,7 @@ async function exportSelected() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
