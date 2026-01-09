@@ -232,15 +232,26 @@ body {
 }
 
 .screenshot-container {
-    margin: 20px 0;
-    padding: 10px;
+    display: none; /* Изначально скрыт */
+    margin: 20px auto;
+    width: 90%;
+    max-width: 500px;
     background: var(--card);
-    border: 1px solid var(--blue);
+    border: 2px solid var(--blue);
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
-    animation: fadeIn 0.3s ease;
+    padding: 10px;
+    z-index: 999; /* Поверх всего */
+    position: relative;
 }
 
+#screenshot-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    background: #000; /* Фон, пока грузится */
+    min-height: 150px; /* Чтобы блок не был «схлопнутым» */
+}
 .screenshot-header {
     display: flex;
     justify-content: space-between;
@@ -260,16 +271,11 @@ body {
     cursor: pointer;
 }
 
-#screenshot-img {
-    width: 100%;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
 
 
 
