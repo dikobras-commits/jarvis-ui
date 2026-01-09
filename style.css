@@ -160,3 +160,54 @@ body {
     z-index: 20;      /* Чтобы точно было поверх всего */
     position: relative;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: var(--card);
+    margin: 20% auto;
+    padding: 20px;
+    border: 1px solid var(--blue);
+    width: 80%;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
+.game-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.game-item {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+.game-item:hover {
+    border-color: var(--blue);
+    background: rgba(56, 189, 248, 0.1);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--red);
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
