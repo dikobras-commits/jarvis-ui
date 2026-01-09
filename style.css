@@ -438,11 +438,41 @@ body {
     box-shadow: 0 0 5px rgba(56, 189, 248, 0.3);
 }
 
+/* Верхняя панель навигации */
+.file-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    align-items: center;
+}
 
+/* Кнопка загрузки */
+.upload-btn {
+    background: rgba(45, 212, 191, 0.1); /* Прозрачный зеленый */
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.3s;
+}
 
+.upload-btn:active {
+    background: var(--green);
+    color: #000;
+    transform: scale(0.95);
+}
 
-
-
-
-
-
+/* Кнопка назад (чуть обновим для симметрии) */
+.back-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
