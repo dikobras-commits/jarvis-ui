@@ -35,8 +35,8 @@ function showPage(pageId, element) {
     
     // Специальный режим для чата
     if (pageId === 'chat') {
-        activePage.style.display = 'flex';
-        loadHistory();
+    document.getElementById('chat').style.display = 'block';
+    loadHistory();
     } else {
         activePage.style.display = 'block';
     }
@@ -152,5 +152,6 @@ async function sendMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
 
 
