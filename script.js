@@ -65,28 +65,38 @@ function showPage(pageId, element) {
 
 // 3. Скриншоты
 async function takeScreenshot() {
-    tg.HapticFeedback.impactOccurred('medium'); // Виброотклик
+    tg.HapticFeedback.impactOccurred('medium');
     
     const container = document.getElementById('screenshot-preview');
     const imgElement = document.getElementById('screenshot-img');
     
     try {
+        // Добавляем к адресу /screenshot
         const response = await fetch(`${pcAddress}/screenshot`, {
-            headers: { "bypass-tunnel-reminder": "true" }
+            method: 'GET',
+            headers: { 
+                "bypass-tunnel-reminder": "true",
+                "Accept": "application/json"
+            }
         });
+
+        if (!response.ok) {
+            throw new Error(`Сервер ответил с ошибкой: ${response.status}`);
+        }
+
         const data = await response.json();
         
-        if (data.status === "success") {
+        if (data.status === "success" && data.image) {
             imgElement.src = data.image;
-            container.style.display = 'block'; // Показываем блок
-            
-            // Плавный скролл к скриншоту
+            container.style.display = 'block';
             container.scrollIntoView({ behavior: 'smooth' });
         } else {
-            alert("Ошибка скриншота: " + data.message);
+            console.error("Ошибка в данных:", data.message);
         }
     } catch (err) {
-        console.error("Не удалось получить скриншот:", err);
+        console.error("Критическая ошибка fetch:", err);
+        // Выведем ошибку прямо в интерфейс для отладки
+        alert("Не удалось связаться с ПК. Проверьте туннель.");
     }
 }
 
@@ -196,6 +206,7 @@ window.onclick = function(event) {
     if (event.target == modal) closeGameModal();
 }
 setInterval(updateStats, 4000);
+
 
 
 
