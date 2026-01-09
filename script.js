@@ -245,25 +245,22 @@ function toggleFile(path) {
 }
 
 async function exportSelected() {
-   
     const userId = tg.initDataUnsafe?.user?.id;
-    tg.showAlert("Ваш ID: " + userId + ". Отправляю " + selectedFiles.size + " файлов.");
     
     if (!userId) {
-        alert("Сэр, я не вижу вашего Telegram ID. Запустите бота заново.");
+        alert("Критическая ошибка: Telegram ID не найден. Открой приложение через бота!");
         return;
     }
 
-    // Превращаем Set в обычный массив и фильтруем пустые значения
-    const filePaths = Array.from(selectedFiles).filter(p => p !== null && p !== undefined);
-
+    const filePaths = Array.from(selectedFiles);
     if (filePaths.length === 0) {
-        alert("Файлы не выбраны");
+        alert("Сэр, вы не выбрали ни одного файла.");
         return;
     }
 
-    tg.HapticFeedback.notificationOccurred('success');
-    
+    // Это поможет нам понять, что кнопка нажата и данные собраны
+    console.log("Отправка на сервер:", { paths: filePaths, chat_id: userId });
+
     try {
         const response = await fetch(`${pcAddress}/file-manager/export`, {
             method: 'POST',
@@ -279,38 +276,18 @@ async function exportSelected() {
 
         const result = await response.json();
         
-        if (result.status === "sent" && result.count > 0) {
-            tg.showPopup({
-                title: 'Джарвис',
-                message: `Сэр, ${result.count} файл(ов) отправлено в ваш чат.`,
-                buttons: [{type: 'ok'}]
-            });
+        if (result.status === "sent") {
+            tg.showAlert(`Запрос принят! Отправлено файлов: ${result.count}`);
             selectedFiles.clear();
-            toggleFile(""); // Скрываем кнопку выгрузки
+            const bar = document.getElementById('file-actions');
+            if (bar) bar.style.display = 'none';
         } else {
-            alert("Файлы не были отправлены. Проверьте консоль сервера.");
+            alert("Сервер ответил ошибкой: " + result.message);
         }
     } catch (e) {
-        console.error("Ошибка экспорта:", e);
+        alert("Не удалось связаться с сервером. Проверьте адрес в script.js и запущен ли main.py");
+        console.error(e);
     }
 }
 
 setInterval(updateStats, 4000);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
