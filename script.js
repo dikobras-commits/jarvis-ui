@@ -65,38 +65,28 @@ function showPage(pageId, element) {
 
 // 3. Скриншоты
 async function takeScreenshot() {
-    tg.HapticFeedback.impactOccurred('medium');
-    
-    const container = document.getElementById('screenshot-preview');
-    const imgElement = document.getElementById('screenshot-img');
+    console.log("Запрос скриншота отправлен..."); // Отладка
     
     try {
-        // Добавляем к адресу /screenshot
         const response = await fetch(`${pcAddress}/screenshot`, {
-            method: 'GET',
-            headers: { 
-                "bypass-tunnel-reminder": "true",
-                "Accept": "application/json"
-            }
+            headers: { "bypass-tunnel-reminder": "true" }
         });
-
-        if (!response.ok) {
-            throw new Error(`Сервер ответил с ошибкой: ${response.status}`);
-        }
-
         const data = await response.json();
         
+        console.log("Ответ от сервера:", data); // Посмотри в консоль, есть ли там огромная строка base64
+
         if (data.status === "success" && data.image) {
+            const container = document.getElementById('screenshot-preview');
+            const imgElement = document.getElementById('screenshot-img');
+            
             imgElement.src = data.image;
-            container.style.display = 'block';
+            container.style.display = 'block'; // Прямое принудительное отображение
+            
+            console.log("Блок должен отобразиться сейчас");
             container.scrollIntoView({ behavior: 'smooth' });
-        } else {
-            console.error("Ошибка в данных:", data.message);
         }
     } catch (err) {
-        console.error("Критическая ошибка fetch:", err);
-        // Выведем ошибку прямо в интерфейс для отладки
-        alert("Не удалось связаться с ПК. Проверьте туннель.");
+        console.error("Ошибка при получении данных:", err);
     }
 }
 
@@ -206,6 +196,7 @@ window.onclick = function(event) {
     if (event.target == modal) closeGameModal();
 }
 setInterval(updateStats, 4000);
+
 
 
 
