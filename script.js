@@ -31,12 +31,12 @@ function showPage(pageId, element) {
     
     // Активируем нужную
     const activePage = document.getElementById(pageId);
-    activePage.classList.add('active');
+    targetPage.classList.add('active');
     
     // Специальный режим для чата
     if (pageId === 'chat') {
-    document.getElementById('chat').style.display = 'block';
-    loadHistory();
+        targetPage.style.display = 'block';
+        loadHistory();
     } else {
         activePage.style.display = 'block';
     }
@@ -152,6 +152,7 @@ async function sendMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
 
 
 
