@@ -186,6 +186,26 @@ body {
     flex-direction: column;
     gap: 10px;
     margin: 20px 0;
+    
+    /* Ограничиваем высоту (примерно на 3.5 элемента) */
+    max-height: 280px; 
+    overflow-y: auto;  /* Включаем вертикальную прокрутку */
+    padding-right: 5px; /* Отступ для скроллбара */
+}
+
+.game-options::-webkit-scrollbar {
+    width: 4px;
+}
+
+.game-options::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.game-options::-webkit-scrollbar-thumb {
+    background: var(--blue);
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--blue);
 }
 
 .game-item {
@@ -210,4 +230,5 @@ body {
     cursor: pointer;
     margin-top: 10px;
 }
+
 
