@@ -181,7 +181,28 @@ async function sendMessage() {
     }
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
+
+function openGameModal() {
+    document.getElementById('game-modal').style.display = 'block';
+    tg.HapticFeedback.impactOccurred('medium');
+}
+
+function closeGameModal() {
+    document.getElementById('game-modal').style.display = 'none';
+}
+
+function runApp(appName) {
+    sendCommand('launch_app', appName);
+    closeGameModal();
+}
+
+// Закрытие при клике вне окна
+window.onclick = function(event) {
+    const modal = document.getElementById('game-modal');
+    if (event.target == modal) closeGameModal();
+}
 setInterval(updateStats, 4000);
+
 
 
 
