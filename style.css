@@ -107,45 +107,46 @@ body {
 .btn-purple:hover, .btn-purple:active { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
 
 
-/* Базовая настройка страницы чата */
+/* Страница чата как главный контейнер */
 #chat.page {
     display: none;
-    height: calc(100vh - 160px); /* Высота минус хедер и таб-бар */
-    margin-bottom: 80px; /* Оставляем место для таб-бара */
+    position: fixed; /* Фиксируем на экране */
+    top: 100px;      /* Отступ от заголовка JARVIS */
+    left: 0;
+    right: 0;
+    bottom: 80px;   /* Оставляем место под синий таб-бар */
+    background: var(--bg);
+    z-index: 5;
 }
 
 #chat.page.active {
     display: block;
 }
 
-/* Контейнер, который управляет распределением места */
-.chat-main-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+/* Сетка чата */
+.chat-grid {
+    display: grid;
+    grid-template-rows: 1fr 70px; /* 1 часть - гибкий чат, 70px - поле ввода */
+    height: 100%; /* Занимает всю высоту #chat.page */
     width: 100%;
 }
 
-/* Область сообщений - теперь она будет скроллиться правильно */
+/* Область сообщений */
 .chat-wrapper {
-    flex: 1; 
     overflow-y: auto;
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    -webkit-overflow-scrolling: touch;
+    gap: 10px;
 }
 
-/* Панель ввода - теперь она всегда будет внизу этого контейнера */
+/* Поле ввода - вторая ячейка сетки */
 .chat-input-area {
-    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 15px;
+    padding: 0 15px;
     background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -154,10 +155,10 @@ body {
     height: 45px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--blue);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 0 15px;
     color: white;
-    font-size: 16px; /* Предотвращает зум на мобилках */
+    font-size: 16px; /* Защита от зума на телефоне */
     outline: none;
 }
 
@@ -166,8 +167,7 @@ body {
     height: 45px;
     background: var(--blue);
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     color: #000;
-    font-weight: bold;
     cursor: pointer;
 }
