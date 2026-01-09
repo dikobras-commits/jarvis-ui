@@ -138,18 +138,7 @@ body {
 }
 
 /* ПАНЕЛЬ ВВОДА — Магия здесь */
-.chat-input-area {
-    position: sticky; /* Липкое позиционирование */
-    bottom: 0;
-    width: 100%;
-    background: #0f172a; /* Темный фон, чтобы перекрывать сообщения при скролле */
-    padding: 15px;
-    display: flex;
-    gap: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-sizing: border-box;
-    z-index: 99;
-}
+
 
 .chat-input-area input {
     flex: 1;
@@ -160,5 +149,6 @@ body {
     color: white;
     font-size: 16px; /* Важно: 16px предотвращает авто-зум на iPhone */
 }
+
 
 
