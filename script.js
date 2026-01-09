@@ -97,32 +97,24 @@ function closeScreenshot() {
 }
 
 // 5. Статус и чат
-async function updateStats() {
-    // Если пользователь сейчас крутит ползунок, не перебиваем его значениями с сервера
-    if (isUserInteracting) return; 
+function updateStats() {
+    // Проверяем, существует ли слайдер, прежде чем брать его значение
+    const volSlider = document.getElementById('volume-slider');
+    const volValue = volSlider ? volSlider.value : 50; 
 
-    try {
-        const res = await fetch(`${pcAddress}/status`, { 
-            headers: { "bypass-tunnel-reminder": "true" } 
-        });
-        const data = await res.json();
-        
-        // Обновляем текст и бары CPU/RAM
+    fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true" } })
+    .then(r => r.json())
+    .then(data => {
         document.getElementById('cpu-val').innerText = data.cpu + '%';
         document.getElementById('cpu-bar').style.width = data.cpu + '%';
         document.getElementById('ram-val').innerText = data.ram + '%';
         document.getElementById('ram-bar').style.width = data.ram + '%';
-
-        // Обновляем ползунок громкости
-        if (volSlider && data.volume !== undefined) {
-            volSlider.value = data.volume;
-            volText.innerText = data.volume + '%';
-        }
-    } catch (e) {
-        console.error("Ошибка обновления статуса:", e);
-    }
+        // Если есть элемент громкости, обновляем и его
+        const volText = document.getElementById('vol-val');
+        if (volText) volText.innerText = data.volume + '%';
+    })
+    .catch(err => console.log("Сэр, статус пока недоступен"));
 }
-
 async function loadHistory() {
     const username = tg.initDataUnsafe?.user?.username || "Guest";
     try {
@@ -246,20 +238,12 @@ function toggleFile(path) {
 
 async function exportSelected() {
     const userId = tg.initDataUnsafe?.user?.id;
-    
-    if (!userId) {
-        alert("Критическая ошибка: Telegram ID не найден. Открой приложение через бота!");
-        return;
-    }
-
     const filePaths = Array.from(selectedFiles);
-    if (filePaths.length === 0) {
-        alert("Сэр, вы не выбрали ни одного файла.");
+
+    if (!userId) {
+        alert("ID не найден. Открой через бота.");
         return;
     }
-
-    // Это поможет нам понять, что кнопка нажата и данные собраны
-    console.log("Отправка на сервер:", { paths: filePaths, chat_id: userId });
 
     try {
         const response = await fetch(`${pcAddress}/file-manager/export`, {
@@ -277,17 +261,17 @@ async function exportSelected() {
         const result = await response.json();
         
         if (result.status === "sent") {
-            tg.showAlert(`Запрос принят! Отправлено файлов: ${result.count}`);
+            // Вместо showPopup используем обычный alert
+            alert(`Сэр, отправлено файлов: ${result.count}`);
             selectedFiles.clear();
             const bar = document.getElementById('file-actions');
             if (bar) bar.style.display = 'none';
-        } else {
-            alert("Сервер ответил ошибкой: " + result.message);
         }
     } catch (e) {
-        alert("Не удалось связаться с сервером. Проверьте адрес в script.js и запущен ли main.py");
-        console.error(e);
+        console.error("Ошибка экспорта:", e);
+        alert("Ошибка связи с сервером");
     }
 }
 
 setInterval(updateStats, 4000);
+
