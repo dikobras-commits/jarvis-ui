@@ -25,45 +25,37 @@ function sendCommand(cmd, value = null) {
 // --- Вставьте это вместо старой функции showPage в script.js ---
 
 function showPage(pageId, element) {
-    // 1. Убираем класс active у всех страниц (CSS сам скроет их)
+    // Скрываем все страницы
     document.querySelectorAll('.page').forEach(p => {
         p.classList.remove('active');
-        // Убираем инлайновые стили, если они остались от старого кода
-        p.style.display = ''; 
+        p.style.display = 'none'; 
     });
     
-    // 2. Находим нужную страницу
     const activePage = document.getElementById(pageId);
-    
-    // 3. Добавляем класс active (CSS сам покажет страницу)
     if (activePage) {
         activePage.classList.add('active');
+        activePage.style.display = 'block'; // Явно показываем
     }
 
-    // 4. Специальная логика для чата
+    // ЛОГИКА ДЛЯ ФАЙЛОВ: Если открыли вкладку files — запускаем загрузку
+    if (pageId === 'files') {
+        console.log("Загрузка файлов...");
+        loadFiles(""); // Загружаем корень (категории)
+    }
+
     if (pageId === 'chat') {
         loadHistory();
-        // Прокрутка вниз
         setTimeout(() => {
             const chatContainer = document.getElementById('chat-messages');
             if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
         }, 100);
     }
-    
 
-    // 5. Обновляем иконки внизу (Таб-бар)
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    if (element) {
-        element.classList.add('active');
-    }
+    if (element) element.classList.add('active');
     
-    // Вибрация
-    if (tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
-    }
-    if (pageId === 'files') loadFiles("");
+    if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
-
 
 // 3. Скриншоты
 async function takeScreenshot() {
@@ -280,6 +272,7 @@ function goBackFiles() {
 if (pageId === 'files') loadFiles("");
 
 setInterval(updateStats, 4000);
+
 
 
 
