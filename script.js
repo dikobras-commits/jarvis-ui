@@ -245,33 +245,46 @@ function toggleFile(path) {
 }
 
 async function exportSelected() {
+    // Получаем ID пользователя именно из Telegram WebApp API
     const userId = tg.initDataUnsafe?.user?.id;
-    if (!userId) return alert("Ошибка: ID пользователя не найден");
-
-    tg.HapticFeedback.notificationOccurred('success');
-    await fetch(`${pcAddress}/file-manager/export`, {
-        method: 'POST',
-        headers: { "Content-Type": "application/json", "bypass-tunnel-reminder": "true" },
-        body: JSON.stringify({ 
-            paths: Array.from(selectedFiles),
-            chat_id: userId
-        })
-    });
     
-    selectedFiles.clear();
-    toggleFile(); // Скрыть панель
-    tg.MainButton.setText("Файлы отправлены!").show();
-    setTimeout(() => tg.MainButton.hide(), 3000);
-}
+    if (!userId) {
+        alert("Ошибка: Не удалось определить ваш Telegram ID. Откройте приложение через бота.");
+        return;
+    }
 
-function goBackFiles() {
-    // Упрощенная логика возврата в корень
-    loadFiles("");
-}
+    console.log("Отправка файлов для ID:", userId);
+    tg.HapticFeedback.notificationOccurred('success');
 
-if (pageId === 'files') loadFiles("");
+    try {
+        const response = await fetch(`${pcAddress}/file-manager/export`, {
+            method: 'POST',
+            headers: { 
+                "Content-Type": "application/json", 
+                "bypass-tunnel-reminder": "true" 
+            },
+            body: JSON.stringify({ 
+                paths: Array.from(selectedFiles),
+                chat_id: userId // Передаем твой ID серверу
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.status === "sent") {
+            selectedFiles.clear();
+            toggleFile(); // Скрыть панель выбора
+            tg.MainButton.setText(`✅ Отправлено: ${result.count}`).show();
+            setTimeout(() => tg.MainButton.hide(), 3000);
+        }
+    } catch (e) {
+        console.error("Ошибка при экспорте:", e);
+        alert("Сэр, не удалось отправить файлы на сервер.");
+    }
+}
 
 setInterval(updateStats, 4000);
+
 
 
 
