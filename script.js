@@ -2,7 +2,7 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 
-const pcAddress = "https://cyan-women-bow.loca.lt"; 
+const pcAddress = "https://cyan-files-fail.loca.lt"; 
 const user = tg.initDataUnsafe?.user;
 
 let isUserInteracting = false;
@@ -135,3 +135,4 @@ async function sendMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
