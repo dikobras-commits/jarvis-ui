@@ -1,6 +1,6 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
-
+let currentPath = "";
 
 const pcAddress = "https://jarvis-project-my-unique-name.loca.lt"; 
 const user = tg.initDataUnsafe?.user;
@@ -194,6 +194,7 @@ let currentFilePath = "";
 let selectedFiles = new Set();
 
 async function loadFiles(path = "") {
+    currentPath = path;
     const container = document.getElementById('file-list');
     if (!container) {
         console.error("Контейнер file-list не найден!");
@@ -328,7 +329,60 @@ function goBackFiles() {
     loadFiles(""); 
 }
 
+function triggerUpload() {
+    if (!currentPath) {
+        alert("Сэр, выберите конкретную папку для загрузки.");
+        return;
+    }
+    // Кликаем по скрытому инпуту программно
+    document.getElementById('file-upload-input').click();
+}
+
+// 2. Обработка выбранного файла
+async function handleFileUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", currentPath); // Говорим серверу, куда класть
+
+    // Визуализация загрузки
+    const btn = document.querySelector('.upload-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ Ждите...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(`${pcAddress}/file-manager/upload`, {
+            method: 'POST',
+            // Важно: для FormData не нужно задавать Content-Type, браузер сам поставит boundary
+            headers: { "bypass-tunnel-reminder": "true" }, 
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            tg.HapticFeedback.notificationOccurred('success');
+            // Обновляем список файлов, чтобы увидеть новый файл
+            loadFiles(currentPath);
+        } else {
+            alert("Ошибка: " + result.message);
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Ошибка загрузки");
+    } finally {
+        // Возвращаем кнопку в исходное состояние
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        input.value = ""; // Очищаем инпут
+    }
+}
+
 setInterval(updateStats, 4000);
+
 
 
 
