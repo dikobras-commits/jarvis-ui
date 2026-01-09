@@ -363,6 +363,72 @@ body {
     border-radius: 5px;
 }
 
+/* Элемент списка (файл или папка) */
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Эффект при наведении/нажатии */
+.file-item:active {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: var(--blue);
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+/* Иконки */
+.file-icon {
+    font-size: 1.4rem;
+    margin-right: 15px;
+    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.5));
+}
+
+/* Название файла */
+.file-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Кастомный чекбокс Джарвиса */
+.file-checkbox {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--blue);
+    border-radius: 5px;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+}
+
+.file-checkbox:checked {
+    background: var(--blue);
+}
+
+.file-checkbox:checked::after {
+    content: "✓";
+    color: #000;
+    position: absolute;
+    left: 3px;
+    top: -2px;
+    font-weight: 900;
+}
+
+
 
 
 
