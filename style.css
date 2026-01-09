@@ -107,66 +107,67 @@ body {
 .btn-purple:hover, .btn-purple:active { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
 
 
-/* Общий контейнер страницы чата */
-/* Исправленный контейнер страницы чата */
+/* Базовая настройка страницы чата */
 #chat.page {
     display: none;
-    height: calc(100vh - 120px); /* Высота экрана минус хедер и таб-бар */
-    padding: 0;
-    margin: 0;
+    height: calc(100vh - 160px); /* Высота минус хедер и таб-бар */
+    margin-bottom: 80px; /* Оставляем место для таб-бара */
 }
 
 #chat.page.active {
     display: block;
 }
 
-/* Внутренний контейнер для управления слоями */
-.chat-container {
+/* Контейнер, который управляет распределением места */
+.chat-main-container {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
 }
 
-/* Область сообщений */
+/* Область сообщений - теперь она будет скроллиться правильно */
 .chat-wrapper {
-    flex: 1; /* Занимает всё свободное место */
+    flex: 1; 
     overflow-y: auto;
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* ПАНЕЛЬ ВВОДА — теперь она точно будет видна */
+/* Панель ввода - теперь она всегда будет внизу этого контейнера */
 .chat-input-area {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 15px;
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    /* Убираем position: absolute/fixed, она просто стоит внизу flex-контейнера */
 }
 
 .chat-input-area input {
     flex: 1;
+    height: 45px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--blue);
     border-radius: 12px;
-    padding: 12px;
+    padding: 0 15px;
     color: white;
+    font-size: 16px; /* Предотвращает зум на мобилках */
     outline: none;
-    font-size: 16px; /* Важно для мобилок! */
 }
 
 .chat-input-area button {
+    width: 45px;
+    height: 45px;
     background: var(--blue);
     border: none;
     border-radius: 12px;
-    width: 45px;
-    height: 45px;
-    color: black;
+    color: #000;
+    font-weight: bold;
     cursor: pointer;
 }
