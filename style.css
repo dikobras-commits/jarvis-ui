@@ -354,15 +354,6 @@ body {
     background: var(--green);
 }
 
-.back-btn {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid var(--blue);
-    color: var(--blue);
-    margin: 10px;
-    padding: 8px;
-    border-radius: 5px;
-}
-
 /* Элемент списка (файл или папка) */
 .file-item {
     display: flex;
@@ -476,3 +467,4 @@ body {
     border-radius: 8px;
     cursor: pointer;
 }
+
