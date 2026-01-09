@@ -90,9 +90,28 @@
     </nav>
 
     <script src="script.js"></script>
+
+    <div id="game-modal" class="modal">
+    <div class="modal-content">
+        <h3><span class="btn-icon">🎮</span> Выберите протокол</h3>
+        <div class="game-options">
+            <div class="game-item" onclick="runApp('steam')">
+                <span>Steam</span>
+            </div>
+            <div class="game-item" onclick="runApp('cs2')">
+                <span>Counter-Strike 2</span>
+            </div>
+            <div class="game-item" onclick="runApp('discord')">
+                <span>Discord</span>
+            </div>
+        </div>
+        <button class="close-btn" onclick="closeGameModal()">Отмена</button>
+    </div>
+</div>
 </body>
 
 </html>
+
 
 
 
