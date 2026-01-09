@@ -64,40 +64,34 @@ function showPage(pageId, element) {
 
 
 // 3. Скриншоты
-function takeScreenshot() {
-    tg.HapticFeedback.impactOccurred('medium');
-    fetch(`${pcAddress}/screenshot`, { headers: { "bypass-tunnel-reminder": "true" } })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "success") {
-            const container = document.getElementById('screenshot-container');
-            const img = document.getElementById('screen-img');
-            img.src = "data:image/png;base64," + data.image;
-            container.style.display = 'block';
-        }
-    });
-}
-
-function hideScreenshot() {
-    document.getElementById('screenshot-container').style.display = 'none';
-}
-
-const volSlider = document.getElementById('volume-slider');
-const volText = document.getElementById('vol-val');
-
-if (volSlider) {
-    volSlider.addEventListener('input', function() {
-        isUserInteracting = true; // Блокируем авто-обновление, пока тянем
-        volText.innerText = this.value + '%';
-    });
-
-    volSlider.addEventListener('change', function() {
-        // Отправляем команду только когда пользователь отпустил палец/мышь
-        sendCommand('set_volume', this.value);
+async function takeScreenshot() {
+    tg.HapticFeedback.impactOccurred('medium'); // Виброотклик
+    
+    const container = document.getElementById('screenshot-preview');
+    const imgElement = document.getElementById('screenshot-img');
+    
+    try {
+        const response = await fetch(`${pcAddress}/screenshot`, {
+            headers: { "bypass-tunnel-reminder": "true" }
+        });
+        const data = await response.json();
         
-        // Снимаем блокировку через секунду после изменения
-        setTimeout(() => { isUserInteracting = false; }, 1000);
-    });
+        if (data.status === "success") {
+            imgElement.src = data.image;
+            container.style.display = 'block'; // Показываем блок
+            
+            // Плавный скролл к скриншоту
+            container.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            alert("Ошибка скриншота: " + data.message);
+        }
+    } catch (err) {
+        console.error("Не удалось получить скриншот:", err);
+    }
+}
+
+function closeScreenshot() {
+    document.getElementById('screenshot-preview').style.display = 'none';
 }
 
 // 5. Статус и чат
@@ -202,6 +196,7 @@ window.onclick = function(event) {
     if (event.target == modal) closeGameModal();
 }
 setInterval(updateStats, 4000);
+
 
 
 
