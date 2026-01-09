@@ -2,7 +2,7 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 
-const pcAddress = "https://slow-turkeys-smoke.loca.lt"; 
+const pcAddress = "https://jarvis-project-my-unique-name.loca.lt"; 
 const user = tg.initDataUnsafe?.user;
 
 let isUserInteracting = false;
@@ -202,6 +202,7 @@ window.onclick = function(event) {
     if (event.target == modal) closeGameModal();
 }
 setInterval(updateStats, 4000);
+
 
 
 
