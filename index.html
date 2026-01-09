@@ -84,20 +84,26 @@
         </section>
         <section id="files" class="page">
     <div class="file-manager-container">
+    <div class="file-header">
         <button class="back-btn" onclick="goBackFiles()">⬅ Назад</button>
         
-        <div id="file-list" class="file-scroll-area"></div>
-        
-        <div id="file-actions" class="file-footer-bar">
-            <div class="selection-info">
-                <span class="btn-icon"></span>
-                Выбрано: <span id="sel-count">0</span>
-            </div>
-            <button class="export-btn" onclick="exportSelected()">
-                <span class="btn-icon"></span> ВЫГРУЗИТЬ
-            </button>
-        </div>
+        <button class="upload-btn" onclick="triggerUpload()">
+            <span class="btn-icon">☁️</span> Загрузить
+        </button>
+        <input type="file" id="file-upload-input" style="display: none;" onchange="handleFileUpload(this)">
     </div>
+    
+    <div id="file-list" class="file-scroll-area"></div>
+    
+    <div id="file-actions" class="file-footer-bar">
+        <div class="selection-info">
+            Выбрано: <span id="sel-count">0</span>
+        </div>
+        <button class="export-btn" onclick="exportSelected()">
+            <span class="btn-icon"></span> ВЫГРУЗИТЬ
+        </button>
+    </div>
+</div>
 </section>
     </main>
 
@@ -150,6 +156,7 @@
 </body>
 
 </html>
+
 
 
 
