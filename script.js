@@ -194,8 +194,9 @@ let currentFilePath = "";
 let selectedFiles = new Set();
 
 async function loadFiles(path = "") {
-    const listContainer = document.getElementById('file-list');
-    listContainer.innerHTML = "<div class='loader'>Загрузка...</div>";
+    const container = document.getElementById('file-list'); // Было 'file-manager'
+    if (!container) return;
+    container.innerHTML = "<p style='padding:20px;'>Связь с ПК...</p>";
 
     try {
         const res = await fetch(`${pcAddress}/file-manager/list`, {
@@ -288,6 +289,7 @@ function goBackFiles() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
