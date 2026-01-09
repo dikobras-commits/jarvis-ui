@@ -65,28 +65,36 @@ function showPage(pageId, element) {
 
 // 3. Скриншоты
 async function takeScreenshot() {
-    console.log("Запрос скриншота отправлен..."); // Отладка
-    
+    console.log("📸 Запрашиваю скриншот...");
+    const container = document.getElementById('screenshot-preview');
+    const imgElement = document.getElementById('screenshot-img');
+
+    if (!container || !imgElement) {
+        alert("Ошибка: Элементы screenshot-preview не найдены в HTML!");
+        return;
+    }
+
     try {
         const response = await fetch(`${pcAddress}/screenshot`, {
             headers: { "bypass-tunnel-reminder": "true" }
         });
         const data = await response.json();
-        
-        console.log("Ответ от сервера:", data); // Посмотри в консоль, есть ли там огромная строка base64
 
-        if (data.status === "success" && data.image) {
-            const container = document.getElementById('screenshot-preview');
-            const imgElement = document.getElementById('screenshot-img');
+        if (data.status === "success") {
+            console.log("✅ Скриншот получен, длина строки:", data.image.length);
             
+            // Сначала вставляем данные
             imgElement.src = data.image;
-            container.style.display = 'block'; // Прямое принудительное отображение
             
-            console.log("Блок должен отобразиться сейчас");
-            container.scrollIntoView({ behavior: 'smooth' });
+            // Ждем, пока картинка загрузится в браузер, прежде чем показать блок
+            imgElement.onload = function() {
+                container.style.setProperty('display', 'block', 'important');
+                console.log("👁️ Блок теперь должен быть виден");
+                container.scrollIntoView({ behavior: 'smooth' });
+            };
         }
     } catch (err) {
-        console.error("Ошибка при получении данных:", err);
+        console.error("❌ Ошибка:", err);
     }
 }
 
@@ -196,6 +204,7 @@ window.onclick = function(event) {
     if (event.target == modal) closeGameModal();
 }
 setInterval(updateStats, 4000);
+
 
 
 
