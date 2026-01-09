@@ -49,6 +49,7 @@ function showPage(pageId, element) {
             if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
         }, 100);
     }
+    
 
     // 5. Обновляем иконки внизу (Таб-бар)
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -60,6 +61,7 @@ function showPage(pageId, element) {
     if (tg.HapticFeedback) {
         tg.HapticFeedback.impactOccurred('light');
     }
+    if (pageId === 'files') loadFiles("");
 }
 
 
@@ -203,7 +205,82 @@ window.onclick = function(event) {
     const modal = document.getElementById('game-modal');
     if (event.target == modal) closeGameModal();
 }
+
+let currentFilePath = "";
+let selectedFiles = new Set();
+
+async function loadFiles(path = "") {
+    const listContainer = document.getElementById('file-list');
+    listContainer.innerHTML = "<div class='loader'>Загрузка...</div>";
+
+    try {
+        const res = await fetch(`${pcAddress}/file-manager/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", "bypass-tunnel-reminder": "true" },
+            body: JSON.stringify({ path: path })
+        });
+        const items = await res.json();
+
+        listContainer.innerHTML = "";
+        document.getElementById('file-back').style.display = path ? "block" : "none";
+        currentFilePath = path;
+
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = `file-item ${item.type}`;
+            div.innerHTML = `
+                <span class="icon">${item.type === 'file' ? '📄' : '📁'}</span>
+                <span class="name">${item.name}</span>
+                ${item.type === 'file' ? `<input type="checkbox" onclick="event.stopPropagation(); toggleFile('${item.path}')">` : ''}
+            `;
+            div.onclick = () => {
+                if (item.type !== 'file') loadFiles(item.path);
+            };
+            listContainer.appendChild(div);
+        });
+    } catch (e) {
+        listContainer.innerHTML = "Ошибка связи с ПК";
+    }
+}
+
+function toggleFile(path) {
+    if (selectedFiles.has(path)) selectedFiles.delete(path);
+    else selectedFiles.add(path);
+    
+    const bar = document.getElementById('file-actions');
+    bar.style.display = selectedFiles.size > 0 ? "flex" : "none";
+    document.getElementById('sel-count').innerText = selectedFiles.size;
+}
+
+async function exportSelected() {
+    const userId = tg.initDataUnsafe?.user?.id;
+    if (!userId) return alert("Ошибка: ID пользователя не найден");
+
+    tg.HapticFeedback.notificationOccurred('success');
+    await fetch(`${pcAddress}/file-manager/export`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json", "bypass-tunnel-reminder": "true" },
+        body: JSON.stringify({ 
+            paths: Array.from(selectedFiles),
+            chat_id: userId
+        })
+    });
+    
+    selectedFiles.clear();
+    toggleFile(); // Скрыть панель
+    tg.MainButton.setText("Файлы отправлены!").show();
+    setTimeout(() => tg.MainButton.hide(), 3000);
+}
+
+function goBackFiles() {
+    // Упрощенная логика возврата в корень
+    loadFiles("");
+}
+
+if (pageId === 'files') loadFiles("");
+
 setInterval(updateStats, 4000);
+
 
 
 
