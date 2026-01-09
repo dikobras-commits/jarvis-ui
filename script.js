@@ -245,17 +245,24 @@ function toggleFile(path) {
 }
 
 async function exportSelected() {
-    // Получаем ID пользователя именно из Telegram WebApp API
+    // Получаем ID пользователя
     const userId = tg.initDataUnsafe?.user?.id;
     
     if (!userId) {
-        alert("Ошибка: Не удалось определить ваш Telegram ID. Откройте приложение через бота.");
+        alert("Сэр, я не вижу вашего Telegram ID. Запустите бота заново.");
         return;
     }
 
-    console.log("Отправка файлов для ID:", userId);
-    tg.HapticFeedback.notificationOccurred('success');
+    // Превращаем Set в обычный массив и фильтруем пустые значения
+    const filePaths = Array.from(selectedFiles).filter(p => p !== null && p !== undefined);
 
+    if (filePaths.length === 0) {
+        alert("Файлы не выбраны");
+        return;
+    }
+
+    tg.HapticFeedback.notificationOccurred('success');
+    
     try {
         const response = await fetch(`${pcAddress}/file-manager/export`, {
             method: 'POST',
@@ -264,26 +271,31 @@ async function exportSelected() {
                 "bypass-tunnel-reminder": "true" 
             },
             body: JSON.stringify({ 
-                paths: Array.from(selectedFiles),
-                chat_id: userId // Передаем твой ID серверу
+                paths: filePaths,
+                chat_id: userId
             })
         });
 
         const result = await response.json();
         
-        if (result.status === "sent") {
+        if (result.status === "sent" && result.count > 0) {
+            tg.showPopup({
+                title: 'Джарвис',
+                message: `Сэр, ${result.count} файл(ов) отправлено в ваш чат.`,
+                buttons: [{type: 'ok'}]
+            });
             selectedFiles.clear();
-            toggleFile(); // Скрыть панель выбора
-            tg.MainButton.setText(`✅ Отправлено: ${result.count}`).show();
-            setTimeout(() => tg.MainButton.hide(), 3000);
+            toggleFile(""); // Скрываем кнопку выгрузки
+        } else {
+            alert("Файлы не были отправлены. Проверьте консоль сервера.");
         }
     } catch (e) {
-        console.error("Ошибка при экспорте:", e);
-        alert("Сэр, не удалось отправить файлы на сервер.");
+        console.error("Ошибка экспорта:", e);
     }
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
