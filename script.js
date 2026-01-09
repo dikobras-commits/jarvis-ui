@@ -23,12 +23,29 @@ function sendCommand(cmd, value = null) {
 
 // 2. Функции страниц
 function showPage(pageId, element) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
+    // Скрываем все страницы
+    document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+    });
+    
+    // Активируем нужную
+    const activePage = document.getElementById(pageId);
+    activePage.classList.add('active');
+    
+    // Специальный режим для чата
+    if (pageId === 'chat') {
+        activePage.style.display = 'flex';
+        loadHistory();
+    } else {
+        activePage.style.display = 'block';
+    }
+
+    // Таб-бар
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
     element.classList.add('active');
+    
     tg.HapticFeedback.impactOccurred('light');
-    if (pageId === 'chat') loadHistory();
 }
 
 // 3. Скриншоты
@@ -135,4 +152,5 @@ async function sendMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
 
