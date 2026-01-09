@@ -22,31 +22,46 @@ function sendCommand(cmd, value = null) {
 }
 
 // 2. Функции страниц
+// --- Вставьте это вместо старой функции showPage в script.js ---
+
 function showPage(pageId, element) {
-    // Скрываем все страницы
+    // 1. Убираем класс active у всех страниц (CSS сам скроет их)
     document.querySelectorAll('.page').forEach(p => {
         p.classList.remove('active');
-        p.style.display = 'none';
+        // Убираем инлайновые стили, если они остались от старого кода
+        p.style.display = ''; 
     });
     
-    // Активируем нужную
+    // 2. Находим нужную страницу
     const activePage = document.getElementById(pageId);
-    targetPage.classList.add('active');
     
-    // Специальный режим для чата
-    if (pageId === 'chat') {
-        targetPage.style.display = 'block';
-        loadHistory();
-    } else {
-        activePage.style.display = 'block';
+    // 3. Добавляем класс active (CSS сам покажет страницу)
+    if (activePage) {
+        activePage.classList.add('active');
     }
 
-    // Таб-бар
+    // 4. Специальная логика для чата
+    if (pageId === 'chat') {
+        loadHistory();
+        // Прокрутка вниз
+        setTimeout(() => {
+            const chatContainer = document.getElementById('chat-messages');
+            if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 100);
+    }
+
+    // 5. Обновляем иконки внизу (Таб-бар)
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    element.classList.add('active');
+    if (element) {
+        element.classList.add('active');
+    }
     
-    tg.HapticFeedback.impactOccurred('light');
+    // Вибрация
+    if (tg.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('light');
+    }
 }
+
 
 // 3. Скриншоты
 function takeScreenshot() {
@@ -152,6 +167,7 @@ async function sendMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
 
 
 
