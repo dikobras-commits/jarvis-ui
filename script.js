@@ -82,34 +82,49 @@ function hideScreenshot() {
     document.getElementById('screenshot-container').style.display = 'none';
 }
 
-// 4. Логика ползунка
 const volSlider = document.getElementById('volume-slider');
+const volText = document.getElementById('vol-val');
+
 if (volSlider) {
-    volSlider.oninput = function() {
-        isUserInteracting = true;
-        document.getElementById('vol-val').innerText = this.value + '%';
+    volSlider.addEventListener('input', function() {
+        isUserInteracting = true; // Блокируем авто-обновление, пока тянем
+        volText.innerText = this.value + '%';
+    });
+
+    volSlider.addEventListener('change', function() {
+        // Отправляем команду только когда пользователь отпустил палец/мышь
         sendCommand('set_volume', this.value);
-    };
-    const unlock = () => { setTimeout(() => { isUserInteracting = false; }, 1000); };
-    volSlider.onmouseup = unlock;
-    volSlider.ontouchend = unlock;
+        
+        // Снимаем блокировку через секунду после изменения
+        setTimeout(() => { isUserInteracting = false; }, 1000);
+    });
 }
 
 // 5. Статус и чат
 async function updateStats() {
-    if (isUserInteracting) return;
+    // Если пользователь сейчас крутит ползунок, не перебиваем его значениями с сервера
+    if (isUserInteracting) return; 
+
     try {
-        const res = await fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true" } });
+        const res = await fetch(`${pcAddress}/status`, { 
+            headers: { "bypass-tunnel-reminder": "true" } 
+        });
         const data = await res.json();
+        
+        // Обновляем текст и бары CPU/RAM
         document.getElementById('cpu-val').innerText = data.cpu + '%';
         document.getElementById('cpu-bar').style.width = data.cpu + '%';
         document.getElementById('ram-val').innerText = data.ram + '%';
         document.getElementById('ram-bar').style.width = data.ram + '%';
-        if (volSlider) {
+
+        // Обновляем ползунок громкости
+        if (volSlider && data.volume !== undefined) {
             volSlider.value = data.volume;
-            document.getElementById('vol-val').innerText = data.volume + '%';
+            volText.innerText = data.volume + '%';
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error("Ошибка обновления статуса:", e);
+    }
 }
 
 async function loadHistory() {
@@ -167,6 +182,7 @@ async function sendMessage() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 setInterval(updateStats, 4000);
+
 
 
 
