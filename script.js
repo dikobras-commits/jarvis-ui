@@ -240,6 +240,7 @@ function toggleFile(path) {
     if (selectedFiles.size > 0) {
         bar.style.display = "flex"; // Показываем панель
         countSpan.innerText = selectedFiles.size;
+        tg.HapticFeedback.impactOccurred('light'); // Вибрация при выборе
     } else {
         bar.style.display = "none";
     }
@@ -287,5 +288,6 @@ function goBackFiles() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
