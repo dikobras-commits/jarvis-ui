@@ -194,37 +194,63 @@ let currentFilePath = "";
 let selectedFiles = new Set();
 
 async function loadFiles(path = "") {
-    const container = document.getElementById('file-list'); // Было 'file-manager'
+    // 1. Находим контейнер. В вашем index.html это 'file-list'
+    const container = document.getElementById('file-list'); 
     if (!container) return;
-    container.innerHTML = "<p style='padding:20px;'>Связь с ПК...</p>";
+
+    // Сбрасываем текущее содержимое
+    container.innerHTML = "<p style='padding:20px; color: var(--blue);'>Сэр, связываюсь с ПК...</p>";
 
     try {
-        const res = await fetch(`${pcAddress}/file-manager/list`, {
+        const response = await fetch(`${pcAddress}/file-manager/list`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", "bypass-tunnel-reminder": "true" },
+            headers: { 
+                "Content-Type": "application/json",
+                "bypass-tunnel-reminder": "true" 
+            },
             body: JSON.stringify({ path: path })
         });
-        const items = await res.json();
 
-        listContainer.innerHTML = "";
-        document.getElementById('file-back').style.display = path ? "block" : "none";
-        currentFilePath = path;
+        const items = await response.json();
+        
+        // 2. ВАЖНО: Используем 'container', который объявили выше
+        container.innerHTML = ""; 
+
+        if (items.error) {
+            container.innerHTML = `<p style="color:var(--red); padding:20px;">Ошибка: ${items.error}</p>`;
+            return;
+        }
 
         items.forEach(item => {
             const div = document.createElement('div');
             div.className = `file-item ${item.type}`;
+            
+            // Определяем иконку
+            let icon = "📄";
+            if (item.type === 'category' || item.type === 'folder') icon = "📁";
+
             div.innerHTML = `
-                <span class="icon">${item.type === 'file' ? '📄' : '📁'}</span>
-                <span class="name">${item.name}</span>
+                <span class="file-icon">${icon}</span>
+                <span class="file-name">${item.name}</span>
                 ${item.type === 'file' ? `<input type="checkbox" onclick="event.stopPropagation(); toggleFile('${item.path}')">` : ''}
             `;
+
+            // Логика клика
             div.onclick = () => {
-                if (item.type !== 'file') loadFiles(item.path);
+                if (item.type === 'file') {
+                    toggleFile(item.path);
+                    const cb = div.querySelector('input');
+                    if (cb) cb.checked = !cb.checked;
+                } else {
+                    loadFiles(item.path);
+                }
             };
-            listContainer.appendChild(div);
+
+            container.appendChild(div); // Опять же, используем 'container'
         });
     } catch (e) {
-        listContainer.innerHTML = "Ошибка связи с ПК";
+        console.error("Ошибка загрузки файлов:", e);
+        container.innerHTML = '<p style="color:var(--red); padding:20px;">Ошибка связи с ПК</p>';
     }
 }
 
@@ -289,6 +315,7 @@ function goBackFiles() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
