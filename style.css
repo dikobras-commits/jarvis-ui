@@ -20,7 +20,7 @@ body {
 .main-title { font-size: 36px; font-weight: 900; letter-spacing: 5px; color: var(--blue); text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); margin: 0; }
 .status-badge { display: inline-block; font-size: 11px; color: var(--green); border: 1px solid var(--green); padding: 4px 12px; border-radius: 20px; margin-top: 10px; background: rgba(45, 212, 191, 0.1); }
 
-.page { display: none; padding: 0 20px; }
+.page { display: none; }
 .page.active { display: block; animation: slideUp 0.3s ease-out; }
 
 .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -154,3 +154,4 @@ body {
     padding: 15px;
     -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
 }
+
