@@ -194,12 +194,14 @@ let currentFilePath = "";
 let selectedFiles = new Set();
 
 async function loadFiles(path = "") {
-    // 1. Находим контейнер. В вашем index.html это 'file-list'
-    const container = document.getElementById('file-list'); 
-    if (!container) return;
+    // 1. Исправляем ID: берем 'file-list', как в твоем HTML
+    const container = document.getElementById('file-list');
+    if (!container) {
+        console.error("Контейнер file-list не найден!");
+        return;
+    }
 
-    // Сбрасываем текущее содержимое
-    container.innerHTML = "<p style='padding:20px; color: var(--blue);'>Сэр, связываюсь с ПК...</p>";
+    container.innerHTML = "<p style='padding:20px; color:var(--blue);'>Сэр, запрашиваю данные...</p>";
 
     try {
         const response = await fetch(`${pcAddress}/file-manager/list`, {
@@ -212,45 +214,49 @@ async function loadFiles(path = "") {
         });
 
         const items = await response.json();
-        
-        // 2. ВАЖНО: Используем 'container', который объявили выше
-        container.innerHTML = ""; 
+        container.innerHTML = ""; // Очищаем текст загрузки
 
         if (items.error) {
-            container.innerHTML = `<p style="color:var(--red); padding:20px;">Ошибка: ${items.error}</p>`;
+            container.innerHTML = `<p style="color:var(--red); padding:20px;">${items.error}</p>`;
             return;
         }
 
         items.forEach(item => {
             const div = document.createElement('div');
+            // Добавляем класс file-item для стилей и тип
             div.className = `file-item ${item.type}`;
             
-            // Определяем иконку
-            let icon = "📄";
-            if (item.type === 'category' || item.type === 'folder') icon = "📁";
-
+            let icon = item.type === 'file' ? "📄" : "📁";
+            
             div.innerHTML = `
                 <span class="file-icon">${icon}</span>
                 <span class="file-name">${item.name}</span>
-                ${item.type === 'file' ? `<input type="checkbox" onclick="event.stopPropagation(); toggleFile('${item.path}')">` : ''}
+                ${item.type === 'file' ? `
+                    <input type="checkbox" 
+                           class="file-checkbox" 
+                           ${selectedFiles.has(item.path) ? 'checked' : ''} 
+                           onclick="event.stopPropagation(); toggleFile('${item.path}')">
+                ` : ''}
             `;
 
-            // Логика клика
+            // Клик по всей строке
             div.onclick = () => {
                 if (item.type === 'file') {
-                    toggleFile(item.path);
                     const cb = div.querySelector('input');
-                    if (cb) cb.checked = !cb.checked;
+                    cb.checked = !cb.checked;
+                    toggleFile(item.path);
                 } else {
+                    // Если папка или категория — заходим внутрь
                     loadFiles(item.path);
                 }
             };
 
-            container.appendChild(div); // Опять же, используем 'container'
+            container.appendChild(div);
         });
+
     } catch (e) {
-        console.error("Ошибка загрузки файлов:", e);
-        container.innerHTML = '<p style="color:var(--red); padding:20px;">Ошибка связи с ПК</p>';
+        console.error("Ошибка связи:", e);
+        container.innerHTML = "<p style='color:var(--red); padding:20px;'>Ошибка связи с ПК</p>";
     }
 }
 
@@ -315,6 +321,7 @@ function goBackFiles() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
