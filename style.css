@@ -329,7 +329,7 @@ body {
     background: var(--blue);
     color: #000;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 10px;
     border-radius: 8px;
     font-weight: 900;
     cursor: pointer;
@@ -349,6 +349,7 @@ body {
     padding: 8px;
     border-radius: 5px;
 }
+
 
 
 
