@@ -228,12 +228,21 @@ async function loadFiles(path = "") {
 }
 
 function toggleFile(path) {
-    if (selectedFiles.has(path)) selectedFiles.delete(path);
-    else selectedFiles.add(path);
+    if (selectedFiles.has(path)) {
+        selectedFiles.delete(path);
+    } else {
+        selectedFiles.add(path);
+    }
     
     const bar = document.getElementById('file-actions');
-    bar.style.display = selectedFiles.size > 0 ? "flex" : "none";
-    document.getElementById('sel-count').innerText = selectedFiles.size;
+    const countSpan = document.getElementById('sel-count');
+    
+    if (selectedFiles.size > 0) {
+        bar.style.display = "flex"; // Показываем панель
+        countSpan.innerText = selectedFiles.size;
+    } else {
+        bar.style.display = "none";
+    }
 }
 
 async function exportSelected() {
@@ -273,5 +282,10 @@ async function exportSelected() {
     }
 }
 
+function goBackFiles() {
+    loadFiles(""); 
+}
+
 setInterval(updateStats, 4000);
+
 
