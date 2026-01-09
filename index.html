@@ -36,6 +36,13 @@
                 <div class="control-btn btn-blue" onclick="takeScreenshot()">
                     <span class="btn-icon">📸</span><span class="btn-text">Screenshot</span>
                 </div>
+                <div id="screenshot-preview" class="screenshot-container" style="display: none;">
+                <div class="screenshot-header">
+                    <span>📸 Последний снимок экрана</span>
+                    <button onclick="closeScreenshot()">×</button>
+                </div>
+                <img id="screenshot-img" src="" alt="Screenshot">
+                </div>
             </div>
             
             <div id="screenshot-container" class="glass-modal">
@@ -123,6 +130,7 @@
 </body>
 
 </html>
+
 
 
 
