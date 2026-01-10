@@ -6,6 +6,8 @@ const pcAddress = "https://jarvis-project-my-unique-name.loca.lt";
 const user = tg.initDataUnsafe?.user;
 
 let isUserInteracting = false;
+let editor; // Глобальная переменная для Editor.js
+let currentNoteId = null;
 
 // 1. Главная функция отправки
 function sendCommand(cmd, value = null) {
@@ -36,6 +38,8 @@ function showPage(pageId, element) {
         activePage.classList.add('active');
         activePage.style.display = 'block'; // Явно показываем
     }
+    
+    if (pageId === 'intel') loadNotes();
 
     // ЛОГИКА ДЛЯ ФАЙЛОВ: Если открыли вкладку files — запускаем загрузку
     if (pageId === 'files') {
@@ -381,7 +385,153 @@ async function handleFileUpload(input) {
     }
 }
 
+function initEditor(data = {}) {
+    if (editor) editor.destroy();
+    
+    editor = new EditorJS({
+        holder: 'editorjs',
+        tools: {
+            header: Header,
+            list: List,
+            checklist: Checklist,
+            // Сюда можно подключить Mermaid плагин
+        },
+        data: data,
+        placeholder: 'Protocol details...',
+        onReady: () => {
+            console.log('Editor.js is ready to work!');
+        }
+    });
+}
+
+// Открытие редактора
+function openEditor(type, noteData = null) {
+    const modal = document.getElementById('editor-modal');
+    modal.style.display = 'flex';
+    
+    if (noteData) {
+        currentNoteId = noteData.id;
+        document.getElementById('note-title').value = noteData.title;
+        document.getElementById('note-reminder').value = noteData.reminder_time || "";
+        initEditor(JSON.parse(noteData.content));
+    } else {
+        currentNoteId = null;
+        document.getElementById('note-title').value = "";
+        document.getElementById('note-reminder').value = "";
+        
+        let initialData = {};
+        if (type === 'checklist') {
+            initialData = { blocks: [{ type: "checklist", data: { items: [{text: "Task 1", checked: false}] } }] };
+        }
+        initEditor(initialData);
+    }
+}
+
+function closeEditor() {
+    document.getElementById('editor-modal').style.display = 'none';
+}
+
+// Сохранение заметки
+async function saveNote() {
+    const outputData = await editor.save();
+    const title = document.getElementById('note-title').value || "Untitled Protocol";
+    const reminder = document.getElementById('note-reminder').value;
+    
+    const payload = {
+        id: currentNoteId,
+        title: title,
+        content: outputData,
+        reminder_time: reminder || null,
+        is_pinned: false
+    };
+    
+    try {
+        await fetch(`${pcAddress}/intel/notes`, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { "bypass-tunnel-reminder": "true" } // Если используется localtunnel
+        });
+        tg.HapticFeedback.notificationOccurred('success');
+        closeEditor();
+        loadNotes(); // Перезагрузить список
+    } catch (e) {
+        console.error(e);
+        alert("Save failed");
+    }
+}
+
+// Загрузка заметок
+async function loadNotes() {
+    const container = document.getElementById('notes-container');
+    container.innerHTML = '<div class="loader">Loading Intel...</div>';
+    
+    try {
+        const res = await fetch(`${pcAddress}/intel/notes`, { headers: { "bypass-tunnel-reminder": "true" } });
+        const notes = await res.json();
+        
+        container.innerHTML = '';
+        if (notes.length === 0) {
+            document.getElementById('intel-empty').style.display = 'block';
+            return;
+        }
+        document.getElementById('intel-empty').style.display = 'none';
+        
+        notes.forEach(note => {
+            const card = document.createElement('div');
+            card.className = 'note-card';
+            
+            // Парсим превью
+            let contentObj = JSON.parse(note.content);
+            let previewText = "No content";
+            if (contentObj.blocks && contentObj.blocks.length > 0) {
+                // Берем текст из первого блока
+                previewText = contentObj.blocks[0].data.text || "Media Content";
+            }
+            
+            card.innerHTML = `
+                <div class="note-title">${note.title}</div>
+                <div class="note-preview">${previewText}</div>
+                ${note.reminder_time ? '<div style="font-size:10px; color:var(--red); margin-top:5px">⏰ ' + new Date(note.reminder_time).toLocaleString() + '</div>' : ''}
+            `;
+            
+            card.onclick = () => openEditor('edit', note);
+            container.appendChild(card);
+        });
+        
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = 'Error loading intel.';
+    }
+}
+
+// AI Magic Function
+async function applyMagicAI() {
+    const title = document.getElementById('note-title').value;
+    if (!title) return alert("Enter a title first");
+    
+    const btn = document.querySelector('.magic-btn');
+    btn.innerText = "✨ Processing...";
+    
+    try {
+        const res = await fetch(`${pcAddress}/intel/ai-expand`, {
+            method: 'POST',
+            body: JSON.stringify({ text: title }),
+            headers: { "bypass-tunnel-reminder": "true" }
+        });
+        const aiData = await res.json();
+        
+        // Обновляем редактор данными от AI
+        editor.render(aiData);
+        tg.HapticFeedback.notificationOccurred('success');
+    } catch (e) {
+        alert("AI Offline");
+    } finally {
+        btn.innerText = "✨ AI Expand";
+    }
+}
+
 setInterval(updateStats, 4000);
+
 
 
 
