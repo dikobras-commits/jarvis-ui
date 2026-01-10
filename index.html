@@ -105,6 +105,31 @@
     </div>
 </div>
 </section>
+      <section id="intel" class="page">
+    <div class="intel-header">
+        <h2 class="main-title" style="font-size: 24px;">Active Memory</h2>
+        <div class="search-bar">
+            <input type="text" id="intel-search" placeholder="Search protocol..." oninput="filterNotes(this.value)" 
+                   style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--blue); color: white; border-radius: 8px;">
+        </div>
+    </div>
+    
+    <div class="notes-grid" id="notes-container">
+        </div>
+
+    <div id="intel-empty" class="empty-state" style="text-align: center; margin-top: 50px; display: none;">
+        <div style="font-size: 50px; opacity: 0.5;">🧠</div>
+        <p style="color: var(--blue);">Memory Core Empty</p>
+    </div>
+
+    <div class="fab-container">
+        <div class="fab-menu">
+            <button class="fab-item" onclick="openEditor('checklist')" title="Plan">✅</button>
+            <button class="fab-item" onclick="openEditor('text')" title="Note">📝</button>
+        </div>
+        <button class="fab-main" onclick="openEditor('text')">+</button>
+    </div>
+</section>   
     </main>
 
     <nav class="tab-bar">
@@ -119,6 +144,9 @@
         </div>
         <div class="tab-item" onclick="showPage('files', this)">
     <span class="tab-icon">📂</span><span>Files</span>
+        </div>
+        <div class="tab-item" onclick="showPage('intel', this)">
+    <span class="tab-icon">🧠</span><span>Intel</span>
         </div>
     </nav>
 
@@ -152,10 +180,36 @@
         </div>
         <button class="close-btn" onclick="closeGameModal()">Отмена</button>
     </div>
+        <div id="editor-modal" class="modal" style="display:none; z-index: 1000;">
+    <div class="modal-content" style="width: 95%; max-width: 800px; height: 90vh; display: flex; flex-direction: column;">
+        <div class="editor-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <input type="text" id="note-title" placeholder="Protocol Title..." 
+                   style="background: transparent; border: none; border-bottom: 1px solid var(--blue); color: var(--blue); font-size: 20px; font-weight: bold; width: 60%; outline: none;">
+            <div class="editor-actions">
+                <button class="magic-btn" onclick="applyMagicAI()" style="margin-right: 10px;">✨ AI</button>
+                <button class="close-btn" onclick="saveNote()" style="background: var(--green); color: black; margin-right: 10px;">💾</button>
+                <button class="close-btn" onclick="closeEditor()">×</button>
+            </div>
+        </div>
+        
+        <div id="editorjs" style="flex-grow: 1; overflow-y: auto; text-align: left; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;"></div>
+        
+        <div class="editor-footer" style="margin-top: 15px; border-top: 1px solid rgba(56,189,248,0.2); padding-top: 10px;">
+            <label style="font-size: 12px; color: var(--blue);">🔔 REMINDER:</label>
+            <input type="datetime-local" id="note-reminder" style="background: #050a0e; border: 1px solid var(--blue); color: white; padding: 5px; border-radius: 5px; margin-left: 10px;">
+        </div>
+    </div>
 </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 </body>
 
 </html>
+
 
 
 
