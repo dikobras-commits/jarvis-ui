@@ -521,16 +521,29 @@ async function applyMagicAI() {
     btn.innerText = "✨ Processing...";
     
     try {
-        const res = await fetch(`${pcAddress}/intel/ai-expand`, {
+    const res = await fetch(`${pcAddress}/intel/ai-expand`, {
             method: 'POST',
             body: JSON.stringify({ text: title }),
-            headers: { "bypass-tunnel-reminder": "true" }
+            headers: { "bypass-tunnel-reminder": "true", 'Content-Type': 'application/json' } // Добавил Content-Type
         });
-        const aiData = await res.json();
         
-        // Обновляем редактор данными от AI
-        editor.render(aiData);
-        tg.HapticFeedback.notificationOccurred('success');
+        // 1. Проверяем статус ответа (если Ollama не работала, FastAPI вернул бы ошибку)
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error("FastAPI Error:", res.status, errorText);
+            throw new Error(`Server returned status ${res.status}`);
+        }
+        
+        // 2. Декодируем полученный JSON
+        const aiData = await res.json(); // <-- Теперь здесь ошибок быть не должно
+        
+        // 3. Обновляем редактор данными от AI
+        if (editor && typeof editor.render === 'function') {
+            await editor.render(aiData);
+            tg.HapticFeedback.notificationOccurred('success');
+        } else {
+            console.error("Editor.js is not initialized or functional.");
+        }
     } catch (e) {
         alert("AI Offline");
     } finally {
@@ -539,6 +552,7 @@ async function applyMagicAI() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
