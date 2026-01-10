@@ -592,10 +592,32 @@ body {
     font-size: 12px;
 }
 
+#editor-modal .modal-content {
+    width: 95vw;
+    height: 90vh;
+    max-width: none;
+    background: #050a0e; /* Чистый черный фон для фокуса */
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+#editorjs {
+    color: white;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* Стили для блоков редактора, чтобы их было видно */
+.ce-block { color: white; }
+.ce-toolbar__plus, .ce-toolbar__settings-btn { background-color: var(--blue); }
+
 /* EditorJS Dark Mode Overrides */
 .codex-editor { color: #fff; }
 .ce-block__content { max-width: 100%; }
 .ce-toolbar__content { max-width: 100%; }
 .ce-popover { color: #000; }
+
 
 
