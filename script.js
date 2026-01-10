@@ -406,18 +406,25 @@ function initEditor(data = {}) {
 
 // Открытие редактора
 function openEditor(type, noteData = null) {
+    // Предотвращаем всплытие клика, если нажали на кнопку
     if (window.event) window.event.stopPropagation();
+    
     const modal = document.getElementById('editor-modal');
-    modal.style.display = 'flex';
- document.getElementById('note-title').value = noteData ? noteData.title : "";
+    modal.style.display = 'flex'; // Теперь это сработает, так как div вынесен
+
+    // Заполняем поля
+    document.getElementById('note-title').value = noteData ? noteData.title : "";
     document.getElementById('note-reminder').value = (noteData && noteData.reminder_time) ? noteData.reminder_time.slice(0, 16) : "";
     currentNoteId = noteData ? noteData.id : null;
 
-    // Инициализируем редактор
+    // Уничтожаем старый экземпляр, если был
     if (editor && typeof editor.destroy === 'function') {
-        editor.destroy();
+        try {
+            editor.destroy();
+        } catch (e) { console.log("Editor cleanup", e); }
     }
 
+    // Создаем новый
     editor = new EditorJS({
         holder: 'editorjs',
         tools: {
@@ -425,12 +432,11 @@ function openEditor(type, noteData = null) {
             list: List,
             checklist: Checklist
         },
-        data: noteData ? JSON.parse(noteData.content) : {},
-        placeholder: 'Начните вводить данные протокола...'
+        // Если новая заметка - пустой объект, если старая - парсим JSON
+        data: noteData && noteData.content ? JSON.parse(noteData.content) : {},
+        placeholder: 'Начните вводить данные протокола...',
+        autofocus: true
     });
-}
-function closeEditor() {
-    document.getElementById('editor-modal').style.display = 'none';
 }
 
 // Сохранение заметки
@@ -533,6 +539,7 @@ async function applyMagicAI() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
