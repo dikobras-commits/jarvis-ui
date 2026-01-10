@@ -418,20 +418,33 @@ function openEditor(type, noteData = null) {
     currentNoteId = noteData ? noteData.id : null;
 
     // Уничтожаем старый экземпляр, если был
-    if (editor && typeof editor.destroy === 'function') {
+   if (editor && typeof editor.destroy === 'function') {
         try {
             editor.destroy();
+            editor = null; // Очищаем переменную
         } catch (e) { console.log("Editor cleanup", e); }
     }
 
-    // Создаем новый
+    // Создаем новый экземпляр Editor.js
     editor = new EditorJS({
         holder: 'editorjs',
+        // ... (ваши инструменты) ...
         tools: {
             header: Header,
             list: List,
             checklist: Checklist
         },
+        data: noteData && noteData.content ? JSON.parse(noteData.content) : {},
+        placeholder: 'Начните вводить данные протокола...',
+        autofocus: true,
+        
+        // КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ: onReady
+        onReady: () => {
+            console.log("Editor.js is ready.");
+            // Отправляем хук в Telegram о том, что редактор готов
+            window.Telegram.WebApp.ready(); 
+        },
+    });
         // Если новая заметка - пустой объект, если старая - парсим JSON
         data: noteData && noteData.content ? JSON.parse(noteData.content) : {},
         placeholder: 'Начните вводить данные протокола...',
@@ -552,6 +565,7 @@ async function applyMagicAI() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
