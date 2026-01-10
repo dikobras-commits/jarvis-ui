@@ -468,3 +468,134 @@ body {
     cursor: pointer;
 }
 
+/* style.css (добавить в конец) */
+
+/* Intel Grid */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+.note-card {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--blue);
+    border-radius: 12px;
+    padding: 15px;
+    height: fit-content;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.note-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+.note-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.note-preview {
+    font-size: 12px;
+    color: #cbd5e1;
+    opacity: 0.8;
+    max-height: 100px;
+    overflow: hidden;
+}
+
+/* FAB Button */
+.fab-container {
+    position: fixed;
+    bottom: 90px; /* Выше навигации */
+    right: 20px;
+    z-index: 100;
+}
+
+.fab-main {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: var(--blue);
+    border: none;
+    color: #000;
+    font-size: 30px;
+    font-weight: 900;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.fab-container:hover .fab-main {
+    transform: rotate(45deg);
+}
+
+.fab-menu {
+    position: absolute;
+    bottom: 70px;
+    right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    transform: translateY(20px);
+}
+
+.fab-container:hover .fab-menu {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+.fab-menu button {
+    width: 45px; height: 45px;
+    border-radius: 50%;
+    border: 1px solid var(--blue);
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    cursor: pointer;
+}
+
+/* Editor Modal */
+.full-screen-modal .modal-content {
+    width: 95%;
+    height: 90vh;
+    background: #050a0e;
+    border: 1px solid var(--blue);
+    display: flex;
+    flex-direction: column;
+}
+
+.transparent-input {
+    background: transparent;
+    border: none;
+    color: var(--blue);
+    font-size: 24px;
+    width: 100%;
+    outline: none;
+    font-weight: bold;
+}
+
+.magic-btn {
+    background: linear-gradient(45deg, var(--purple), var(--blue));
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+/* EditorJS Dark Mode Overrides */
+.codex-editor { color: #fff; }
+.ce-block__content { max-width: 100%; }
+.ce-toolbar__content { max-width: 100%; }
+.ce-popover { color: #000; }
+
+
