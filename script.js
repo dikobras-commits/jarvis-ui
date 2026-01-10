@@ -406,27 +406,29 @@ function initEditor(data = {}) {
 
 // Открытие редактора
 function openEditor(type, noteData = null) {
+    if (window.event) window.event.stopPropagation();
     const modal = document.getElementById('editor-modal');
     modal.style.display = 'flex';
-    
-    if (noteData) {
-        currentNoteId = noteData.id;
-        document.getElementById('note-title').value = noteData.title;
-        document.getElementById('note-reminder').value = noteData.reminder_time || "";
-        initEditor(JSON.parse(noteData.content));
-    } else {
-        currentNoteId = null;
-        document.getElementById('note-title').value = "";
-        document.getElementById('note-reminder').value = "";
-        
-        let initialData = {};
-        if (type === 'checklist') {
-            initialData = { blocks: [{ type: "checklist", data: { items: [{text: "Task 1", checked: false}] } }] };
-        }
-        initEditor(initialData);
-    }
-}
+ document.getElementById('note-title').value = noteData ? noteData.title : "";
+    document.getElementById('note-reminder').value = (noteData && noteData.reminder_time) ? noteData.reminder_time.slice(0, 16) : "";
+    currentNoteId = noteData ? noteData.id : null;
 
+    // Инициализируем редактор
+    if (editor && typeof editor.destroy === 'function') {
+        editor.destroy();
+    }
+
+    editor = new EditorJS({
+        holder: 'editorjs',
+        tools: {
+            header: Header,
+            list: List,
+            checklist: Checklist
+        },
+        data: noteData ? JSON.parse(noteData.content) : {},
+        placeholder: 'Начните вводить данные протокола...'
+    });
+}
 function closeEditor() {
     document.getElementById('editor-modal').style.display = 'none';
 }
@@ -531,6 +533,7 @@ async function applyMagicAI() {
 }
 
 setInterval(updateStats, 4000);
+
 
 
 
