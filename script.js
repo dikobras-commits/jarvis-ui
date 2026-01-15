@@ -108,7 +108,7 @@ function updateStats() {
     const volSlider = document.getElementById('volume-slider');
     const volValue = volSlider ? volSlider.value : 50; 
 
-    fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true" } })
+    fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true", "X-TG-User": user } })
     .then(r => r.json())
     .then(data => {
         document.getElementById('cpu-val').innerText = data.cpu + '%';
