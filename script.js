@@ -4,7 +4,7 @@ let currentPath = "";
 
 const pcAddress = "https://jarvis-project-my-unique-name.loca.lt"; 
 const user = tg.initDataUnsafe?.user;
-const tgUser = tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "Unknown";
+const tgUsername = tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "Unknown";
 
 let isUserInteracting = false;
 
@@ -16,7 +16,7 @@ function sendCommand(cmd, value = null) {
     fetch(url, { 
         headers: { 
             "bypass-tunnel-reminder": "true",
-            "X-TG-User": tgUser
+            "X-TG-User": tgUsername
         }, 
         mode: 'cors' 
     })
@@ -77,7 +77,7 @@ async function takeScreenshot() {
 
     try {
         const response = await fetch(`${pcAddress}/screenshot`, {
-            headers: { "bypass-tunnel-reminder": "true" }
+            headers: { "bypass-tunnel-reminder": "true", "X-TG-User": tgUsername }
         });
         const data = await response.json();
 
@@ -109,7 +109,7 @@ function updateStats() {
     const volSlider = document.getElementById('volume-slider');
     const volValue = volSlider ? volSlider.value : 50; 
 
-    fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true", "X-TG-User": tgUser } })
+    fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true", "X-TG-User": tgUsername } })
     .then(r => r.json())
     .then(data => {
         document.getElementById('cpu-val').innerText = data.cpu + '%';
@@ -215,7 +215,8 @@ async function loadFiles(path = "") {
             method: 'POST',
             headers: { 
                 "Content-Type": "application/json",
-                "bypass-tunnel-reminder": "true" 
+                "bypass-tunnel-reminder": "true",
+                "X-TG-User": tgUsername
             },
             body: JSON.stringify({ path: path })
         });
