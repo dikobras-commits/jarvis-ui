@@ -15,7 +15,7 @@ function sendCommand(cmd, value = null) {
     fetch(url, { 
         headers: { 
             "bypass-tunnel-reminder": "true",
-            "X-TG-User": tgUsername
+            "X-TG-User": user
         }, 
         mode: 'cors' 
     })
