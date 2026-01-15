@@ -12,7 +12,13 @@ function sendCommand(cmd, value = null) {
     let url = `${pcAddress}/control?command=${cmd}`;
     if (value !== null) url += `&value=${value}`;
 
-    fetch(url, { headers: { "bypass-tunnel-reminder": "true" }, mode: 'cors' })
+    fetch(url, { 
+        headers: { 
+            "bypass-tunnel-reminder": "true",
+            "X-TG-User": tgUsername
+        }, 
+        mode: 'cors' 
+    })
     .then(response => {
         if (response.ok) {
             if (cmd !== 'set_volume') tg.HapticFeedback.notificationOccurred('success');
