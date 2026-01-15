@@ -4,6 +4,7 @@ let currentPath = "";
 
 const pcAddress = "https://jarvis-project-my-unique-name.loca.lt"; 
 const user = tg.initDataUnsafe?.user;
+const tgUser = tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.id || "Unknown";
 
 let isUserInteracting = false;
 
@@ -15,7 +16,7 @@ function sendCommand(cmd, value = null) {
     fetch(url, { 
         headers: { 
             "bypass-tunnel-reminder": "true",
-            "X-TG-User": user
+            "X-TG-User": tgUser
         }, 
         mode: 'cors' 
     })
@@ -108,7 +109,7 @@ function updateStats() {
     const volSlider = document.getElementById('volume-slider');
     const volValue = volSlider ? volSlider.value : 50; 
 
-    fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true", "X-TG-User": user } })
+    fetch(`${pcAddress}/status`, { headers: { "bypass-tunnel-reminder": "true", "X-TG-User": tgUser } })
     .then(r => r.json())
     .then(data => {
         document.getElementById('cpu-val').innerText = data.cpu + '%';
